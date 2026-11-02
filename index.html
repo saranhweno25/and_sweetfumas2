@@ -1,22 +1,789 @@
-<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>My iPhone</title>
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>My iPhone</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;background:#111;color:#fff;font:15px -apple-system,BlinkMacSystemFont,"Arial",sans-serif}.phone{max-width:420px;min-height:100dvh;margin:auto;background:linear-gradient(160deg,#26344b,#a9b7c9 75%,#dce1e8);padding:14px;position:relative}.status{display:flex;justify-content:space-between;font-weight:bold}.clock{text-align:center;margin:45px 0 35px;font-size:54px;font-weight:200}.date{text-align:center;margin-top:-32px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 10px;margin:30px 4px}.app{text-align:center;font-size:12px;cursor:pointer}.icon{width:58px;height:58px;border-radius:15px;margin:auto auto 5px;display:grid;place-items:center;font-size:31px;background:linear-gradient(145deg,#fff,#d8dce3);box-shadow:0 3px 8px #0004}.dock{position:absolute;bottom:16px;left:14px;right:14px;background:#ffffff55;border-radius:25px;padding:12px;display:flex;justify-content:space-around}.dock .icon{margin:0}.screen{position:absolute;inset:0;background:#f7f7f9;color:#222;padding:18px;overflow:auto;display:none}.top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd;padding:8px 0 14px;font-weight:bold}.back,button{cursor:pointer;border:0;border-radius:10px;padding:9px 12px;background:#e8e8ed;color:#222}.post,.bubble,.card{background:white;border-radius:14px;padding:13px;margin:12px 0;box-shadow:0 1px 4px #0001}.bubble{max-width:85%;background:#fee66d}.them{background:white}.row{display:flex;gap:7px;margin-top:10px}input{min-width:0;flex:1;padding:11px;border:1px solid #ccc;border-radius:10px}.muted{color:#777;font-size:13px}
-</style><div class="phone"><div class="status"><span>9:41</span><span>●●●　◉</span></div><div class="clock">9:41</div><div class="date">11月2日 月曜日</div><div class="grid" id="grid"></div><div class="dock" id="dock"></div><section class="screen" id="screen"></section></div>
+:root {
+  --wall-lock: linear-gradient(160deg,#1b2023,#44413c 48%,#15141b);
+  --wall-home: linear-gradient(160deg,#252c36,#5c6570 52%,#171c26);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #080808;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+}
+
+button, input { font: inherit; }
+
+.phone {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  height: 100dvh;
+  min-height: 620px;
+  margin: 0 auto;
+  overflow: hidden;
+  background: #111;
+}
+
+.wall {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+.wall::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom,rgba(0,0,0,.26),transparent 35%,rgba(0,0,0,.16));
+}
+
+.status {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 54px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  font-size: 15px;
+  font-weight: 650;
+  text-shadow: 0 1px 4px #0008;
+}
+
+.status-right { display: flex; gap: 6px; align-items: center; }
+.island {
+  position: absolute;
+  z-index: 4;
+  width: 126px;
+  height: 34px;
+  top: 11px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000;
+  border-radius: 22px;
+}
+
+.view {
+  position: absolute;
+  inset: 0;
+  display: none;
+  overflow: hidden;
+}
+.view.active { display: block; }
+
+/* ロック画面 */
+#lock .wall { background-image: var(--wall-lock); }
+.lock-content {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  text-align: center;
+  padding-top: 95px;
+}
+.lock-date {
+  margin-top: 17px;
+  font-size: 18px;
+  font-weight: 600;
+  text-shadow: 0 2px 8px #0008;
+}
+.lock-time {
+  margin-top: 7px;
+  font-size: clamp(76px, 21vw, 104px);
+  line-height: 1;
+  font-weight: 650;
+  letter-spacing: -5px;
+  text-shadow: 0 2px 12px #0008;
+}
+.lock-note {
+  margin: 28px auto 0;
+  width: calc(100% - 32px);
+  text-align: left;
+  padding: 13px 15px;
+  border-radius: 17px;
+  background: #ffffff24;
+  backdrop-filter: blur(18px);
+  font-size: 14px;
+}
+.lock-bottom {
+  position: absolute;
+  z-index: 3;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.round-control {
+  width: 48px;
+  height: 48px;
+  border: 0;
+  color: white;
+  background: #202027aa;
+  border-radius: 50%;
+  font-size: 21px;
+  cursor: pointer;
+}
+.unlock-hint {
+  position: absolute;
+  z-index: 3;
+  bottom: 82px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 13px;
+  color: #ffffffc9;
+  cursor: pointer;
+}
+.home-indicator {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  width: 135px;
+  height: 5px;
+  border-radius: 5px;
+  background: #fff;
+}
+
+/* パスコード画面 */
+#passcode .wall {
+  background-image: var(--wall-lock);
+  filter: blur(16px);
+  transform: scale(1.08);
+}
+.pass-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: #09090a45;
+}
+.pass-title {
+  position: absolute;
+  top: 155px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 19px;
+}
+.dots {
+  position: absolute;
+  top: 204px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 17px;
+}
+.dot {
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid #fff;
+  border-radius: 50%;
+}
+.dot.filled { background: #fff; }
+.keypad {
+  position: absolute;
+  top: 278px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 276px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 13px 16px;
+}
+.key {
+  width: 78px;
+  height: 78px;
+  border: 0;
+  border-radius: 50%;
+  color: white;
+  background: #ffffff32;
+  font-size: 34px;
+  font-weight: 300;
+  cursor: pointer;
+}
+.key:active { background: #ffffff65; }
+.key small {
+  display: block;
+  margin-top: -2px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+.pass-actions {
+  position: absolute;
+  bottom: 61px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  font-size: 14px;
+}
+.text-button {
+  color: #fff;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+/* ホーム画面 */
+#home .wall { background-image: var(--wall-home); }
+.home-content {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  padding: 60px 18px 115px;
+}
+.widget {
+  width: 48%;
+  min-height: 84px;
+  padding: 12px;
+  border-radius: 18px;
+  background: #ffffff44;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 4px 18px #0002;
+  margin-bottom: 22px;
+}
+.widget-title { font-size: 11px; opacity: .85; }
+.widget-main { margin-top: 7px; font-size: 15px; font-weight: 650; }
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  row-gap: 22px;
+  column-gap: 5px;
+}
+.app-icon {
+  width: 57px;
+  height: 57px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 5px;
+  border-radius: 15px;
+  font-size: 31px;
+  color: #222;
+  background: linear-gradient(145deg,#fff,#e2e2e7);
+  box-shadow: 0 3px 9px #0005;
+}
+.app-button {
+  position: relative;
+  border: 0;
+  color: #fff;
+  background: transparent;
+  text-align: center;
+  font-size: 11px;
+  cursor: pointer;
+}
+.badge {
+  position: absolute;
+  top: -5px;
+  right: 13px;
+  min-width: 18px;
+  height: 18px;
+  line-height: 18px;
+  border-radius: 12px;
+  background: #ff3b30;
+  font-size: 10px;
+  font-weight: 700;
+}
+.dock {
+  position: absolute;
+  z-index: 3;
+  left: 16px;
+  right: 16px;
+  bottom: 23px;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 5px;
+  border-radius: 25px;
+  background: #ffffff48;
+  backdrop-filter: blur(18px);
+}
+.dock .app-icon { margin-bottom: 0; }
+.dock .app-button { font-size: 0; }
+
+/* アプリ画面 */
+#appScreen {
+  z-index: 8;
+  background: #f5f5f7;
+  color: #17171a;
+  padding: 18px 16px 38px;
+  overflow-y: auto;
+}
+.app-header {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid #e3e3e7;
+  padding-bottom: 10px;
+  font-weight: 700;
+}
+.app-header button, .soft-button {
+  border: 0;
+  border-radius: 10px;
+  padding: 8px 11px;
+  background: #e9e9ee;
+  color: #222;
+  cursor: pointer;
+}
+.app-body { padding-bottom: 25px; }
+.card, .post {
+  margin: 12px 0;
+  padding: 14px;
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0 1px 5px #0000;
+}
+.post-user { font-weight: 700; }
+.post p { line-height: 1.5; }
+.muted { color: #777; font-size: 12px; }
+.chat-area { padding: 6px 0; }
+.bubble {
+  width: fit-content;
+  max-width: 84%;
+  margin: 9px 0;
+  padding: 11px 13px;
+  border-radius: 15px;
+  background: #ffe66b;
+  line-height: 1.45;
+}
+.bubble.them { background: #fff; }
+.chat-input {
+  display: flex;
+  gap: 7px;
+  margin-top: 12px;
+}
+.chat-input input, .plan-input {
+  min-width: 0;
+  flex: 1;
+  padding: 11px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: #fff;
+}
+.send-button {
+  border: 0;
+  padding: 0 14px;
+  border-radius: 12px;
+  background: #ffe66b;
+  cursor: pointer;
+}
+.tab-row {
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0 4px;
+  color: #555;
+  font-size: 13px;
+}
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #e7dfe9;
+  font-size: 32px;
+}
+.photo-tile {
+  min-height: 130px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  background: linear-gradient(145deg,#293444,#9c8794);
+  font-size: 50px;
+}
+.settings-label {
+  display: block;
+  margin: 14px 0 5px;
+  font-weight: 650;
+}
+.file-input { width: 100%; padding: 10px 0; }
+.hint { color: #777; font-size: 12px; line-height: 1.5; }
+</style>
+</head>
+
+<body>
+<div class="phone">
+
+  <!-- ロック画面 -->
+  <section class="view active" id="lock">
+    <div class="wall"></div>
+    <div class="status">
+      <span id="statusTime">23:13</span>
+      <span class="status-right">●●●　◉　▰</span>
+    </div>
+    <div class="island"></div>
+    <div class="lock-content">
+      <div style="font-size:24px">🔒</div>
+      <div class="lock-date" id="lockDate">11월 2일 월요일</div>
+      <div class="lock-time" id="lockTime">23:13</div>
+      <div class="lock-note">
+        <b>💬 KakaoTalk</b><br>
+        ふうま：起きてる？少しだけ話したいな。
+      </div>
+    </div>
+    <div class="unlock-hint" onclick="showPasscode()">上にスワイプして開く<br>タップしてパスコードを入力</div>
+    <div class="lock-bottom">
+      <button class="round-control" onclick="showPasscode()">🔦</button>
+      <button class="round-control" onclick="showPasscode()">📷</button>
+    </div>
+    <div class="home-indicator"></div>
+  </section>
+
+  <!-- パスコード画面 -->
+  <section class="view" id="passcode">
+    <div class="wall"></div>
+    <div class="pass-overlay"></div>
+    <div class="status">
+      <span id="passStatusTime">23:13</span>
+      <span class="status-right">●●●　◉　▰</span>
+    </div>
+    <div class="island"></div>
+    <div class="pass-title">パスコードを入力</div>
+    <div class="dots" id="dots">
+      <span class="dot"></span><span class="dot"></span>
+      <span class="dot"></span><span class="dot"></span>
+    </div>
+    <div class="keypad">
+      <button class="key" onclick="pressKey('1')">1</button>
+      <button class="key" onclick="pressKey('2')">2<small>ABC</small></button>
+      <button class="key" onclick="pressKey('3')">3<small>DEF</small></button>
+      <button class="key" onclick="pressKey('4')">4<small>GHI</small></button>
+      <button class="key" onclick="pressKey('5')">5<small>JKL</small></button>
+      <button class="key" onclick="pressKey('6')">6<small>MNO</small></button>
+      <button class="key" onclick="pressKey('7')">7<small>PQRS</small></button>
+      <button class="key" onclick="pressKey('8')">8<small>TUV</small></button>
+      <button class="key" onclick="pressKey('9')">9<small>WXYZ</small></button>
+      <span></span>
+      <button class="key" onclick="pressKey('0')">0</button>
+      <button class="key" onclick="deleteKey()" style="font-size:15px">⌫</button>
+    </div>
+    <div class="pass-actions">
+      <button class="text-button" onclick="alert('緊急通話はゲーム内では使えません。')">緊急通話</button>
+      <button class="text-button" onclick="showLock()">キャンセル</button>
+    </div>
+    <div class="home-indicator"></div>
+  </section>
+
+  <!-- ホーム画面 -->
+  <section class="view" id="home">
+    <div class="wall"></div>
+    <div class="status">
+      <span id="homeStatusTime">23:13</span>
+      <span class="status-right">●●●　◉　▰</span>
+    </div>
+    <div class="island"></div>
+
+    <div class="home-content">
+      <div class="widget">
+        <div class="widget-title">月曜日　11月2日</div>
+        <div class="widget-main">今日の予定<br>ふうまとメッセージ 💬</div>
+      </div>
+
+      <div class="app-grid" id="appGrid"></div>
+    </div>
+
+    <div class="dock" id="dock"></div>
+    <div class="home-indicator"></div>
+  </section>
+
+  <!-- アプリ画面 -->
+  <section class="view" id="appScreen"></section>
+</div>
+
 <script>
-const apps=[["Instagram","📷"],["KakaoTalk","💬"],["X","𝕏"],["電話","📞"],["写真","🌄"],["カレンダー","🗓️"],["Safari","🧭"],["設定","⚙️"]];
-let likes=50;const grid=document.querySelector("#grid"),dock=document.querySelector("#dock"),screen=document.querySelector("#screen");
-function icon([n,e]){return `<div class="app" onclick="openApp('${n}')"><div class="icon">${e}</div>${n}</div>`}
-grid.innerHTML=apps.slice(0,6).map(icon).join("");dock.innerHTML=apps.slice(6).map(icon).join("");
-function openApp(n){screen.style.display="block";let body="";
-if(n==="Instagram")body=`<div class="top"><span>Instagram</span><button onclick="igProfile()">プロフィール</button></div><div id="ig"><div class="post"><b>fm__629</b><p>今日もおつかれさま。空がきれいだった🌙</p><span class="muted">♡ いいね！　コメント</span></div><div class="post"><b>おすすめの投稿</b><p>ファンの投稿：最近、同じ場所で見かけた気がする…？</p></div><button onclick="igProfile()">投稿を見る</button></div>`;
-if(n==="KakaoTalk")body=`<div class="top">KakaoTalk　🔒</div><div id="chat"><div class="bubble them">今日もおつかれさま。無理してない？</div><div class="bubble">大丈夫だよ！</div><div class="bubble them">よかった。落ち着いたらまた話そうね。</div></div><div class="row"><input id="msg" placeholder="メッセージ"><button onclick="send()">送信</button></div><p class="muted">好感度：<span id="love">${likes}</span></p>`;
-if(n==="X")body=`<div class="top">𝕏　ホーム　🔔　DM</div><div class="post">ファンの投稿<p>最近ふうまくんと雰囲気似てる人いない？</p></div><div class="post">海外ファンのDM<p>혹시 후마랑 사귀세요?<br><span class="muted">（もしかしてフウマと付き合っていますか？）</span></p></div><div class="post">ファンの投稿<p>요즘 두 분 분위기가 이상해요<br><span class="muted">（最近2人の雰囲気が怪しいです）</span></p></div>`;
-if(n==="電話")body=`<div class="top">電話</div><div class="card">ふうま　着信中…</div><button onclick="alert('もしもし？声が聞けてうれしい。')">応答</button>`;
-if(n==="写真")body=`<div class="top">写真</div><div class="card">🌃<p>ふたりで見た夜景</p></div><div class="card">☕<p>秘密のカフェデート</p></div>`;
-if(n==="カレンダー")body=`<div class="top">カレンダー</div><div class="card">今日の予定<p id="plans">ふうまとメッセージ</p></div><div class="row"><input id="plan" placeholder="予定を入力"><button onclick="addPlan()">追加</button></div>`;
-if(n==="Safari"||n==="設定")body=`<div class="top">${n}</div><div class="card">この画面はデモです。</div>`;
-screen.innerHTML=`<div class="top"><button class="back" onclick="screen.style.display='none'">‹ ホーム</button><span>${n}</span></div>${body}`}
-function igProfile(){document.querySelector("#ig").innerHTML=`<div class="card"><b>fs2xo_ 🔒</b><p>非公開アカウント</p><p>フォロワー 1　フォロー中 1</p><p>フォロー中：fm__629</p></div>`}
-function send(){let i=document.querySelector("#msg");if(!i.value.trim())return;document.querySelector("#chat").innerHTML+=`<div class="bubble">${i.value}</div><div class="bubble them">うん、聞いてるよ。ここではゆっくり話そう。</div>`;i.value="";likes++;document.querySelector("#love").textContent=likes}
-function addPlan(){let i=document.querySelector("#plan");if(i.value.trim())document.querySelector("#plans").textContent+="・"+i.value;i.value=""}
-</script></html>
+const apps = [
+  {name:"写真", icon:"🌈"},
+  {name:"カメラ", icon:"📷"},
+  {name:"カレンダー", icon:"🗓️"},
+  {name:"設定", icon:"⚙️"},
+  {name:"KakaoTalk", icon:"💬", badge:"4"},
+  {name:"Instagram", icon:"📸", badge:"1"},
+  {name:"時計", icon:"🕒"},
+  {name:"メール", icon:"✉️"},
+  {name:"X", icon:"𝕏"},
+  {name:"電話", icon:"📞"},
+  {name:"Safari", icon:"🧭"},
+  {name:"ミュージック", icon:"🎵"}
+];
+
+let pin = "";
+let affection = 52;
+let activeWallpaperTarget = "lock";
+
+function showView(id) {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+function showPasscode() {
+  pin = "";
+  updateDots();
+  showView("passcode");
+}
+function showLock() { showView("lock"); }
+
+function pressKey(number) {
+  if (pin.length >= 4) return;
+  pin += number;
+  updateDots();
+  if (pin.length === 4) {
+    setTimeout(() => {
+      if (pin === "0629") {
+        showView("home");
+        pin = "";
+        updateDots();
+      } else {
+        pin = "";
+        updateDots();
+        const title = document.querySelector(".pass-title");
+        title.textContent = "もう一度入力してください";
+        setTimeout(() => title.textContent = "パスコードを入力", 900);
+      }
+    }, 180);
+  }
+}
+function deleteKey() {
+  pin = pin.slice(0, -1);
+  updateDots();
+}
+function updateDots() {
+  document.querySelectorAll(".dot").forEach((dot, i) => {
+    dot.classList.toggle("filled", i < pin.length);
+  });
+}
+
+function makeIcon(app) {
+  return `<button class="app-button" onclick="openApp('${app.name}')">
+    <span class="app-icon">${app.icon}</span>${app.name}
+    ${app.badge ? `<span class="badge">${app.badge}</span>` : ""}
+  </button>`;
+}
+document.getElementById("appGrid").innerHTML = apps.slice(0, 8).map(makeIcon).join("");
+document.getElementById("dock").innerHTML = apps.slice(8).map(makeIcon).join("");
+
+function closeApp() { showView("home"); }
+
+function openApp(name) {
+  const panel = document.getElementById("appScreen");
+  let content = "";
+
+  if (name === "Instagram") {
+    content = `
+      <div class="tab-row"><span>ホーム</span><span>リール</span><span>DM</span><span>検索</span></div>
+      <div class="post">
+        <div class="post-user">fm__629　🔒</div>
+        <p>今日はいい天気だったね。みんなもおつかれさま ☁️</p>
+        <div class="muted">♡ いいね！　コメントする</div>
+      </div>
+      <div class="post">
+        <div class="post-user">おすすめの投稿</div>
+        <p>ファンの投稿：この前の写真、同じ場所に見えるような……？</p>
+      </div>
+      <button class="soft-button" onclick="showIgProfile()">プロフィールを見る</button>
+      <div id="igProfileArea"></div>
+      <p class="hint">あなたのアカウント：fs2xo_（非公開）</p>`;
+  } else if (name === "KakaoTalk") {
+    content = `
+      <div class="card"><b>🔒 ふうま</b><div class="muted">オンライン</div></div>
+      <div class="chat-area" id="chatArea">
+        <div class="bubble them">今日もおつかれさま。ちゃんと休めてる？</div>
+        <div class="bubble">うん、少し落ち着いたところ！</div>
+        <div class="bubble them">よかった。無理しないでね。あとでまた連絡する。</div>
+      </div>
+      <div class="chat-input">
+        <input id="chatMessage" placeholder="メッセージを入力">
+        <button class="send-button" onclick="sendMessage()">送信</button>
+      </div>
+      <p class="muted">好感度：<span id="affectionValue">${affection}</span> 💗</p>`;
+  } else if (name === "X") {
+    content = `
+      <div class="tab-row"><span>ホーム</span><span>検索</span><span>通知 🔔</span><span>DM</span></div>
+      <div class="post"><b>ファンの投稿</b><p>最近、ふうまくんの近くにいる人が気になる……。</p><span class="muted">返信 12　リポスト 8　♡ 75</span></div>
+      <div class="post"><b>海外ファンからのDM</b><p>혹시 후마랑 사귀세요?</p><span class="muted">（もしかしてフウマと付き合っていますか？）</span></div>
+      <div class="post"><b>ファンの投稿</b><p>요즘 두 분 분위기가 이상해요</p><span class="muted">（最近2人の雰囲気が怪しいです）</span></div>
+      <div class="post"><b>海外ファンからのメッセージ</b><p>설마 진짜예요...?</p><span class="muted">（まさか本当なの…？）</span></div>`;
+  } else if (name === "電話") {
+    content = `<div class="card" style="text-align:center;padding:35px 10px">
+      <div style="font-size:54px">👤</div><h2>ふうま</h2><p>着信中…</p>
+      <button class="soft-button" onclick="alert('ふうま：もしもし？今、少しだけ話せる？')">📞 応答</button>
+      <button class="soft-button" onclick="alert('通話を終了しました')">終了</button>
+    </div>`;
+  } else if (name === "写真") {
+    content = `<div class="card"><div class="photo-tile">🌃</div><p>ふたりで見た夜景</p></div>
+      <div class="card"><div class="photo-tile">☕</div><p>秘密のカフェデート</p></div>
+      <p class="hint">ストーリーの選択によって、思い出が増えていきます。</p>`;
+  } else if (name === "カレンダー") {
+    content = `<div class="card"><b>11月2日　月曜日</b><p id="plans">ふうまとメッセージ 💬</p></div>
+      <div class="chat-input"><input id="planInput" placeholder="予定を入力">
+      <button class="send-button" onclick="addPlan()">追加</button></div>`;
+  } else if (name === "設定") {
+    content = `<div class="card">
+      <b>壁紙を変更</b>
+      <label class="settings-label" for="lockImage">ロック画面の写真</label>
+      <input class="file-input" id="lockImage" type="file" accept="image/*" onchange="setWallpaper(event,'lock')">
+      <label class="settings-label" for="homeImage">ホーム画面の写真</label>
+      <input class="file-input" id="homeImage" type="file" accept="image/*" onchange="setWallpaper(event,'home')">
+      <p class="hint">写真を選ぶと、このブラウザー内に保存されます。写真のサイズが大きい場合は読み込みに時間がかかることがあります。</p>
+      </div>`;
+  } else if (name === "Safari") {
+    content = `<div class="card"><b>Safari</b><p>ここはゲーム内のブラウザー画面です。</p></div>`;
+  } else {
+    content = `<div class="card">${name}アプリのデモ画面です。</div>`;
+  }
+
+  panel.innerHTML = `
+    <div class="app-header">
+      <button onclick="closeApp()">‹ ホーム</button>
+      <span>${name}</span>
+      <span style="width:60px"></span>
+    </div>
+    <div class="app-body">${content}</div>
+    <div class="home-indicator" style="background:#111"></div>`;
+  showView("appScreen");
+}
+
+function showIgProfile() {
+  document.getElementById("igProfileArea").innerHTML = `
+    <div class="card">
+      <div class="profile-avatar">🌙</div>
+      <h3>fs2xo_ 🔒</h3>
+      <p>非公開アカウント</p>
+      <p>フォロワー 1　　フォロー中 1</p>
+      <p>フォロー中：fm__629</p>
+    </div>`;
+}
+
+function sendMessage() {
+  const input = document.getElementById("chatMessage");
+  if (!input || !input.value.trim()) return;
+  const area = document.getElementById("chatArea");
+  const message = input.value.trim();
+  area.insertAdjacentHTML("beforeend",
+    `<div class="bubble">${escapeHtml(message)}</div>
+     <div class="bubble them">うん、聞いてるよ。ここではゆっくり話そう。</div>`);
+  input.value = "";
+  affection = Math.min(100, affection + 1);
+  document.getElementById("affectionValue").textContent = affection;
+  area.scrollTop = area.scrollHeight;
+}
+
+function addPlan() {
+  const input = document.getElementById("planInput");
+  if (!input || !input.value.trim()) return;
+  document.getElementById("plans").insertAdjacentHTML(
+    "beforeend", `<br>・${escapeHtml(input.value.trim())}`);
+  input.value = "";
+}
+
+function escapeHtml(text) {
+  return text.replace(/[&<>"']/g, ch => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[ch]));
+}
+
+/* 壁紙の保存：IndexedDBを使い、リロード後も残るようにする */
+let wallpaperDB;
+function openWallpaperDB() {
+  return new Promise((resolve, reject) => {
+    if (!("indexedDB" in window)) return reject("IndexedDB unavailable");
+    const request = indexedDB.open("MyIPhoneGame", 1);
+    request.onupgradeneeded = () => {
+      request.result.createObjectStore("wallpapers");
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+async function saveWallpaper(key, blob) {
+  const db = await openWallpaperDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("wallpapers", "readwrite");
+    tx.objectStore("wallpapers").put(blob, key);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function loadWallpaper(key) {
+  try {
+    const db = await openWallpaperDB();
+    return await new Promise((resolve, reject) => {
+      const request = db.transaction("wallpapers").objectStore("wallpapers").get(key);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  } catch (e) {
+    return null;
+  }
+}
+async function setWallpaper(event, target) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  try {
+    await saveWallpaper(target, file);
+    await applyWallpaper(target, file);
+    alert(target === "lock" ? "ロック画面の壁紙を設定しました。" : "ホーム画面の壁紙を設定しました。");
+  } catch (e) {
+    alert("画像を保存できませんでした。別の画像をお試しください。");
+  }
+}
+async function applyWallpaper(target, blob) {
+  const url = URL.createObjectURL(blob);
+  document.documentElement.style.setProperty(
+    target === "lock" ? "--wall-lock" : "--wall-home",
+    `url("${url}")`
+  );
+}
+async function restoreWallpapers() {
+  const lock = await loadWallpaper("lock");
+  const home = await loadWallpaper("home");
+  if (lock) applyWallpaper("lock", lock);
+  if (home) applyWallpaper("home", home);
+}
+restoreWallpapers();
+
+/* 時計・日付 */
+function updateClock() {
+  const now = new Date();
+  const time = new Intl.DateTimeFormat("ja-JP", {
+    hour:"2-digit", minute:"2-digit", hour12:false
+  }).format(now);
+  ["statusTime","passStatusTime","homeStatusTime","lockTime"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = time;
+  });
+  const date = new Intl.DateTimeFormat("ko-KR", {
+    month:"long", day:"numeric", weekday:"long"
+  }).format(now);
+  document.getElementById("lockDate").textContent = date;
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+/* ロック画面で上にスワイプしてパスコード画面へ */
+let touchStartY = 0;
+document.getElementById("lock").addEventListener("touchstart", e => {
+  touchStartY = e.touches[0].clientY;
+}, {passive:true});
+document.getElementById("lock").addEventListener("touchend", e => {
+  const endY = e.changedTouches[0].clientY;
+  if (touchStartY - endY > 45) showPasscode();
+}, {passive:true});
+</script>
+</body>
+</html>
