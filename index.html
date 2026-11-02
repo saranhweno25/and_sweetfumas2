@@ -6,151 +6,254 @@
 <title>iPhone風ミニゲーム</title>
 <style>
 :root {
-  --lock-wall: linear-gradient(145deg,#26222d,#777080 42%,#1c1b25 76%,#48404f);
-  --home-wall: linear-gradient(150deg,#4f5265,#a58a9b 45%,#272634 85%);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: white;
+  --lock-wall: linear-gradient(145deg,#25232d,#81768c 45%,#171720 82%);
+  --home-wall: linear-gradient(150deg,#e8dfe6,#efd3df 48%,#d8cbd9);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:#fff;
 }
-* { box-sizing: border-box; }
+* { box-sizing:border-box; }
 body {
-  margin: 0; min-height: 100dvh; display: grid; place-items: center;
-  background: #101014; color: white;
+  margin:0; min-height:100dvh; display:grid; place-items:center;
+  background:#101014; color:white;
 }
+button { font:inherit; cursor:pointer; }
 .phone {
-  position: relative; width: min(100vw, 430px); height: min(100dvh, 932px);
-  overflow: hidden; background: #111; isolation: isolate;
+  position:relative; width:min(100vw,430px); height:min(100dvh,932px);
+  overflow:hidden; background:#111; isolation:isolate;
 }
-@media (min-width: 500px) {
-  .phone { border: 7px solid #29292d; border-radius: 52px; box-shadow: 0 20px 70px #0009; }
+@media (min-width:500px) {
+  .phone { border:7px solid #29292d; border-radius:50px; box-shadow:0 20px 70px #0009; }
 }
 .wall {
-  position: absolute; inset: 0; z-index: -2; background-size: cover;
-  background-position: center; transition: background .25s;
+  position:absolute; inset:0; z-index:-2; background-size:cover;
+  background-position:center; transition:background .2s;
 }
-.wall.lock { background: var(--lock-wall); }
-.wall.home { background: var(--home-wall); }
-.wall.lock::after {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(#08071222,#08071222);
-}
+.wall.lock { background:var(--lock-wall); }
+.wall.home { background:var(--home-wall); }
+.wall.lock::after { content:""; position:absolute; inset:0; background:#08071226; }
 .status {
-  position: absolute; z-index: 10; top: 0; left: 0; right: 0; height: 46px;
-  padding: 12px 25px 0; display: flex; justify-content: space-between;
-  font-size: 14px; font-weight: 700; text-shadow: 0 1px 5px #0008;
+  position:absolute; z-index:30; top:0; left:0; right:0; height:45px;
+  padding:11px 24px 0; display:flex; justify-content:space-between;
+  font-size:14px; font-weight:700; text-shadow:0 1px 5px #0008;
 }
-.status .right { letter-spacing: 2px; }
-.screen { position: absolute; inset: 0; display: none; }
-.screen.active { display: block; }
-#lockScreen { text-align: center; }
-.lock-date { margin-top: 102px; font-size: 16px; text-shadow: 0 1px 8px #0008; }
-.lock-time { font-size: clamp(68px, 19vw, 92px); line-height: 1.05; font-weight: 650; letter-spacing: -4px; }
-.lock-hint { position: absolute; bottom: 90px; left: 0; right: 0; font-size: 14px; opacity: .9; }
-.lock-shortcuts { position: absolute; bottom: 28px; left: 0; right: 0; display: flex; justify-content: space-around; }
-.shortcut {
-  border: 0; border-radius: 50%; width: 48px; height: 48px; color: white;
-  background: #ffffff55; font-size: 21px;
-}
+.status-right { letter-spacing:1px; }
 .island {
-  position: absolute; z-index: 12; top: 11px; left: 50%; transform: translateX(-50%);
-  width: 115px; height: 32px; border-radius: 25px; background: #050505;
+  position:absolute; z-index:32; top:10px; left:50%; transform:translateX(-50%);
+  width:112px; height:31px; border-radius:22px; background:#050505;
 }
-#passScreen {
-  text-align: center; background: #08080b88; backdrop-filter: blur(22px);
-}
-.pass-title { margin-top: 150px; font-size: 19px; }
-.dots { display:flex; justify-content:center; gap: 17px; margin: 23px 0 43px; }
-.dot { width: 13px; height: 13px; border: 1.5px solid white; border-radius: 50%; }
-.dot.filled { background: white; }
-.keypad {
-  width: 270px; margin: auto; display:grid; grid-template-columns:repeat(3,1fr);
-  gap: 13px 14px;
-}
+.screen { position:absolute; inset:0; display:none; }
+.screen.active { display:block; }
+
+/* ロック画面 */
+#lockScreen { text-align:center; }
+.lock-date { margin-top:100px; font-size:16px; text-shadow:0 1px 8px #0008; }
+.lock-time { font-size:clamp(68px,19vw,92px); line-height:1.08; font-weight:650; letter-spacing:-4px; }
+.lock-hint { position:absolute; bottom:91px; left:0; right:0; font-size:14px; }
+.lock-shortcuts { position:absolute; bottom:27px; left:0; right:0; display:flex; justify-content:space-around; }
+.shortcut { border:0; border-radius:50%; width:48px; height:48px; color:white; background:#ffffff55; font-size:21px; }
+
+/* パスコード画面 */
+#passScreen { text-align:center; background:#09090dbb; backdrop-filter:blur(22px); }
+.pass-title { margin-top:143px; font-size:19px; }
+.dots { display:flex; justify-content:center; gap:17px; margin:22px 0 38px; }
+.dot { width:13px; height:13px; border:1.5px solid white; border-radius:50%; }
+.dot.filled { background:white; }
+.keypad { width:270px; margin:auto; display:grid; grid-template-columns:repeat(3,1fr); gap:12px 14px; }
 .key {
-  width: 78px; height: 78px; border:0; border-radius:50%;
+  width:78px; height:78px; border:0; border-radius:50%;
   color:white; background:#ffffff37; font-size:34px; font-weight:300;
 }
 .key:active { background:#ffffff70; }
 .key small { display:block; font-size:8px; font-weight:700; letter-spacing:2px; margin-top:-2px; }
 .key.zero { grid-column:2; }
-.pass-bottom {
-  position:absolute; bottom: 66px; left:0; right:0; display:flex;
-  justify-content:space-around; font-size:14px;
-}
+.pass-bottom { position:absolute; bottom:65px; left:0; right:0; display:flex; justify-content:space-around; }
 .text-button { border:0; background:none; color:white; font-size:14px; }
-#error { height:20px; color:#ffb5b5; font-size:14px; margin-top:-33px; }
-#homeScreen { padding: 65px 20px 24px; }
-.widget {
-  height: 112px; padding: 15px; margin: 0 0 23px; border-radius: 23px;
-  background:#ffffff37; backdrop-filter:blur(16px); display:flex; align-items:center;
-  justify-content:space-between; box-shadow:inset 0 0 0 1px #ffffff16;
+#error { height:19px; color:#ffb5b5; font-size:14px; margin-top:-29px; }
+
+/* ホーム画面 */
+#homeScreen { padding:65px 17px 115px; }
+.home-widget {
+  height:103px; padding:14px 16px; margin-bottom:21px; border-radius:23px;
+  background:#ffffff66; color:#242229; backdrop-filter:blur(15px);
+  display:flex; align-items:center; justify-content:space-between;
+  box-shadow:inset 0 0 0 1px #ffffff66;
 }
-.widget strong { font-size: 19px; }
-.widget span { opacity:.86; font-size:13px; }
-.app-grid { display:grid; grid-template-columns:repeat(4,1fr); gap: 20px 10px; }
+.home-widget strong { font-size:18px; }
+.home-widget span { font-size:12px; }
+.app-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:17px 5px; }
 .app-icon {
-  border:0; background:none; color:white; display:flex; flex-direction:column;
-  align-items:center; gap:5px; min-width:0; font-size:11px; text-shadow:0 1px 4px #000;
+  position:relative; border:0; background:none; color:#111;
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  min-width:0; font-size:11px; text-shadow:0 1px 3px #ffffffa8;
 }
-.icon {
-  width:55px; height:55px; border-radius:15px; display:grid; place-items:center;
-  font-size:28px; text-shadow:none; box-shadow:0 4px 12px #0003;
+.app-icon .icon {
+  position:relative; width:67px; height:67px; border-radius:18px;
+  display:grid; place-items:center; overflow:visible;
+  box-shadow:0 3px 8px #0002, inset 0 0 0 1px #ffffff55;
+}
+.app-icon .icon svg { width:100%; height:100%; display:block; }
+.badge {
+  position:absolute; right:-5px; top:-7px; min-width:27px; height:27px;
+  padding:0 6px; border-radius:20px; background:#ff334b; color:white;
+  font-size:15px; line-height:27px; text-align:center; text-shadow:none;
+  box-shadow:0 1px 3px #0003;
 }
 .dock {
-  position:absolute; bottom:25px; left:14px; right:14px; height:83px;
-  border-radius:27px; background:#ffffff38; backdrop-filter:blur(18px);
+  position:absolute; bottom:24px; left:13px; right:13px; height:82px;
+  border-radius:26px; background:#ffffff76; backdrop-filter:blur(17px);
   display:flex; justify-content:space-around; align-items:center;
 }
-.dock .icon { width:52px; height:52px; }
-#appScreen { background:#f5f5f7; color:#17171a; }
-.app-top {
-  height: 92px; padding: 53px 18px 10px; display:flex; align-items:center;
-  justify-content:space-between; font-weight:700; font-size:18px;
-}
-.back { border:0; background:#e8e8eb; border-radius:50%; width:34px; height:34px; font-size:20px; }
-.app-body { height:calc(100% - 125px); overflow:auto; padding:16px; }
+.dock .app-icon .icon { width:55px; height:55px; }
 .homebar {
-  position:absolute; z-index:20; bottom:7px; left:50%; transform:translateX(-50%);
+  position:absolute; z-index:40; bottom:7px; left:50%; transform:translateX(-50%);
   width:135px; height:5px; background:white; border-radius:9px; cursor:pointer;
   box-shadow:0 1px 4px #0007;
 }
-#appScreen .homebar { background:#222; }
-.card {
-  background:white; border-radius:16px; padding:16px; margin-bottom:12px;
-  box-shadow:0 1px 4px #0000000d;
+
+/* 通常アプリの枠 */
+#appScreen { background:#f4f4f6; color:#17171a; }
+.app-top {
+  height:88px; padding:49px 17px 8px; display:flex; align-items:center;
+  justify-content:space-between; font-size:18px; font-weight:700;
 }
-.mock-button {
-  border:0; border-radius:12px; padding:11px 15px; background:#3478f6;
-  color:white; font-size:15px; margin:5px 5px 5px 0;
-}
+.back { border:0; border-radius:50%; width:34px; height:34px; background:#e5e5e9; font-size:23px; }
+.app-body { height:calc(100% - 120px); overflow:auto; padding:14px; }
+.card { background:white; color:#202024; border-radius:16px; padding:16px; margin-bottom:12px; }
+.mock-button { border:0; border-radius:12px; padding:11px 14px; background:#3478f6; color:white; margin:4px; }
 .field { width:100%; border:0; border-radius:12px; padding:13px; background:#eee; font-size:16px; }
 .photo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; }
-.photo-tile { aspect-ratio:1; border-radius:5px; background:linear-gradient(135deg,#c9a9a3,#55536d,#222); }
-.ig-head { display:flex; justify-content:space-between; align-items:center; font-size:22px; font-weight:700; }
-.story-row { display:flex; gap:12px; overflow:auto; padding:14px 0; }
-.story { min-width:57px; text-align:center; font-size:10px; }
-.story div { width:52px; height:52px; border-radius:50%; margin:auto auto 5px; background:linear-gradient(45deg,#f9b233,#de3980,#7355dc); padding:3px; }
-.story i { display:block; width:100%; height:100%; border-radius:50%; background:#ddd; border:2px solid white; }
-.post { background:white; border-radius:14px; overflow:hidden; margin-bottom:15px; }
-.post-head { padding:11px; display:flex; align-items:center; gap:9px; font-size:13px; font-weight:600; }
-.avatar { width:31px; height:31px; display:grid; place-items:center; border-radius:50%; background:linear-gradient(45deg,#f7a,#fd5); }
-.post-image { height:300px; display:grid; place-items:center; font-size:70px; background:linear-gradient(140deg,#dec9bf,#8b7786,#273141); }
-.post-actions { padding:10px 12px; font-size:22px; }
-.post-actions button { border:0; background:none; font-size:23px; padding:0 7px 0 0; }
-.instagram-body { padding:12px; background:#fafafa; }
+.photo-tile { aspect-ratio:1; border-radius:4px; background:linear-gradient(135deg,#c9a9a3,#55536d,#222); overflow:hidden; }
+.photo-tile img { width:100%; height:100%; object-fit:cover; }
+
+/* Instagram */
+#appScreen.instagram-mode { background:#fff; color:#111; }
+#appScreen.instagram-mode .app-top { display:none; }
+#appScreen.instagram-mode .app-body { height:100%; padding:0; overflow:hidden; }
+.ig {
+  height:100%; padding-top:42px; background:#fff; color:#111;
+  display:flex; flex-direction:column; position:relative;
+}
+.ig-main { flex:1; overflow-y:auto; padding-bottom:7px; }
+.ig-header {
+  height:45px; padding:0 14px; display:flex; align-items:center;
+  justify-content:space-between; font-size:21px;
+}
+.ig-logo { font-family:cursive; font-weight:700; letter-spacing:-1px; }
+.ig-head-actions { display:flex; align-items:center; gap:18px; font-size:24px; }
+.ig-head-actions button, .ig-nav button, .ig-post-actions button, .ig-profile-actions button {
+  border:0; background:none; color:inherit; padding:0;
+}
+.story-row {
+  display:flex; gap:13px; overflow-x:auto; padding:8px 12px 12px;
+  border-bottom:1px solid #eee;
+}
+.story { flex:0 0 58px; text-align:center; font-size:10px; white-space:nowrap; }
+.story-ring {
+  width:55px; height:55px; border-radius:50%; padding:3px; margin:0 auto 4px;
+  background:linear-gradient(45deg,#ffd35b,#f33872,#9b3de0);
+}
+.story-avatar {
+  width:100%; height:100%; border-radius:50%; border:2px solid white;
+  background:#e8e4eb; display:grid; place-items:center; overflow:hidden; color:#777;
+}
+.story-avatar img { width:100%; height:100%; object-fit:cover; }
+.ig-post { border-bottom:1px solid #eee; }
+.ig-post-header { height:47px; display:flex; align-items:center; padding:0 12px; gap:9px; font-size:12px; }
+.ig-avatar-small {
+  width:31px; height:31px; border-radius:50%; background:linear-gradient(45deg,#f6b54d,#df4181);
+  display:grid; place-items:center; color:white; overflow:hidden; flex:none;
+}
+.ig-avatar-small img { width:100%; height:100%; object-fit:cover; }
+.ig-post-picture {
+  width:100%; aspect-ratio:1 / 1.02; max-height:470px; display:grid; place-items:center;
+  overflow:hidden; background:linear-gradient(140deg,#ddc8b9,#8b7786,#283141);
+  color:#fff; font-size:60px;
+}
+.ig-post-picture img { width:100%; height:100%; object-fit:cover; }
+.ig-post-actions { display:flex; gap:14px; align-items:center; padding:9px 12px 4px; font-size:24px; }
+.ig-post-actions .save { margin-left:auto; }
+.ig-caption { padding:0 12px 12px; font-size:12px; line-height:1.5; }
+.ig-nav {
+  height:52px; flex:none; display:flex; justify-content:space-around; align-items:center;
+  border-top:1px solid #eee; background:#fff;
+}
+.ig-nav button { width:20%; height:48px; font-size:22px; position:relative; }
+.ig-nav button:disabled { opacity:.8; cursor:default; }
+.ig-nav .active::after {
+  content:""; position:absolute; width:4px; height:4px; border-radius:50%;
+  background:#111; bottom:3px; left:50%; transform:translateX(-50%);
+}
+.ig-nav-avatar {
+  width:23px; height:23px; border:1px solid #555; border-radius:50%;
+  display:inline-grid; place-items:center; overflow:hidden; vertical-align:middle; font-size:13px;
+}
+.ig-nav-avatar img { width:100%; height:100%; object-fit:cover; }
+
+/* Instagramプロフィール */
+.ig-profile { padding:13px 15px 20px; }
+.ig-username-row { display:flex; justify-content:space-between; align-items:center; font-weight:700; font-size:16px; margin-bottom:20px; }
+.ig-profile-top { display:flex; align-items:center; gap:23px; }
+.ig-profile-avatar {
+  flex:none; width:83px; height:83px; border-radius:50%; overflow:hidden;
+  background:#eee; display:grid; place-items:center; font-size:30px; color:#888;
+}
+.ig-profile-avatar img { width:100%; height:100%; object-fit:cover; }
+.ig-stats { flex:1; display:flex; justify-content:space-around; text-align:center; font-size:12px; }
+.ig-stats b { display:block; font-size:16px; }
+.ig-name { font-size:13px; margin-top:12px; }
+.ig-private { margin-top:7px; font-size:12px; color:#555; }
+.ig-profile-actions { display:flex; gap:7px; margin:14px 0; }
+.ig-profile-actions button {
+  flex:1; border-radius:8px; background:#efeff0; padding:7px 4px; font-size:12px; font-weight:600;
+}
+.ig-highlight-row { display:flex; gap:17px; padding:8px 0 14px; }
+.ig-highlight { text-align:center; font-size:10px; }
+.ig-highlight-circle {
+  width:54px; height:54px; border:1px solid #ccc; border-radius:50%;
+  display:grid; place-items:center; margin-bottom:5px;
+}
+.ig-profile-tabs { display:flex; justify-content:space-around; border-top:1px solid #ddd; padding:11px 0; font-size:18px; }
+.ig-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; }
+.ig-grid-item { aspect-ratio:1; background:linear-gradient(135deg,#d8c5ba,#897c93,#353242); overflow:hidden; }
+.ig-grid-item img { width:100%; height:100%; object-fit:cover; }
+
+/* DM */
+.dm-page { height:100%; display:flex; flex-direction:column; background:#fff; }
+.dm-top { padding:9px 14px; border-bottom:1px solid #eee; font-weight:700; }
+.dm-person { display:flex; align-items:center; gap:10px; padding:12px; border-bottom:1px solid #eee; }
+.dm-messages { flex:1; overflow:auto; padding:16px 12px; display:flex; flex-direction:column; gap:9px; }
+.dm-bubble { max-width:78%; padding:10px 13px; border-radius:18px; background:#efeff1; font-size:14px; align-self:flex-start; }
+.dm-bubble.mine { background:#3797f0; color:white; align-self:flex-end; }
+.dm-compose { display:flex; gap:8px; padding:9px 12px 14px; border-top:1px solid #eee; }
+.dm-compose input { flex:1; min-width:0; border:1px solid #ddd; border-radius:20px; padding:10px 13px; font-size:14px; }
+.dm-compose button { border:0; background:#3797f0; color:white; border-radius:18px; padding:0 14px; }
+.ig-modal {
+  position:absolute; inset:0; z-index:20; background:#000d; color:white;
+  display:none; align-items:center; justify-content:center; flex-direction:column;
+}
+.ig-modal.show { display:flex; }
+.ig-modal img { max-width:92%; max-height:75%; object-fit:contain; }
+.ig-modal button { position:absolute; top:47px; right:20px; border:0; background:none; color:white; font-size:28px; }
 </style>
 </head>
 <body>
 <main class="phone" id="phone">
   <div class="wall lock" id="lockWall"></div>
   <div class="wall home" id="homeWall" style="display:none"></div>
-  <div class="status"><span id="clockStatus">9:41</span><span class="right">● ▮▮▮  Wi-Fi  ▰</span></div>
+
+  <div class="status">
+    <span id="clockStatus">9:41</span>
+    <span class="status-right">▮▮▮　◉　▰</span>
+  </div>
   <div class="island"></div>
 
   <section class="screen active" id="lockScreen">
     <div class="lock-date" id="dateText"></div>
     <div class="lock-time" id="timeText"></div>
     <div class="lock-hint">上にスワイプしてロックを解除</div>
-    <div class="lock-shortcuts"><button class="shortcut">◉</button><button class="shortcut">▣</button></div>
+    <div class="lock-shortcuts">
+      <button class="shortcut">◉</button><button class="shortcut">▣</button>
+    </div>
   </section>
 
   <section class="screen" id="passScreen">
@@ -165,83 +268,119 @@ body {
   </section>
 
   <section class="screen" id="homeScreen">
-    <div class="widget"><div><strong>こんにちは</strong><br><span id="homeDate"></span></div><span>天気 ☀️ 22°</span></div>
+    <div class="home-widget">
+      <div><strong>こんにちは</strong><br><span id="homeDate"></span></div>
+      <span>☀️　22°</span>
+    </div>
     <div class="app-grid" id="appGrid"></div>
     <div class="dock" id="dock"></div>
   </section>
 
   <section class="screen" id="appScreen">
-    <div class="app-top"><button class="back" id="backHome">‹</button><span id="appTitle"></span><span>•••</span></div>
+    <div class="app-top">
+      <button class="back" id="backHome">‹</button>
+      <span id="appTitle"></span><span>•••</span>
+    </div>
     <div class="app-body" id="appBody"></div>
   </section>
 
   <div class="homebar" id="homebar"></div>
   <input type="file" id="lockPicker" accept="image/*" hidden>
   <input type="file" id="homePicker" accept="image/*" hidden>
+  <input type="file" id="feedPicker" accept="image/*" multiple hidden>
+  <input type="file" id="profilePicker" accept="image/*" hidden>
 </main>
 
 <script>
-const apps = [
-  {id:"photos",name:"写真",icon:"🌸",color:"#fff",dock:false},
-  {id:"camera",name:"カメラ",icon:"📷",color:"#333",dock:false},
-  {id:"calendar",name:"カレンダー",icon:"📅",color:"#fff",dock:false},
-  {id:"clock",name:"時計",icon:"🕘",color:"#fff",dock:false},
-  {id:"settings",name:"設定",icon:"⚙️",color:"#9da3aa",dock:false},
-  {id:"instagram",name:"Instagram",icon:"📸",color:"linear-gradient(135deg,#8358d8,#ee4266,#ffb04a)",dock:false},
-  {id:"maps",name:"マップ",icon:"🗺️",color:"#d4efcf",dock:false},
-  {id:"notes",name:"メモ",icon:"📝",color:"#ffe66d",dock:false},
-  {id:"appstore",name:"App Store",icon:"A",color:"#1687f8",dock:false},
-  {id:"music",name:"ミュージック",icon:"🎵",color:"#f24b65",dock:false},
-  {id:"phone",name:"電話",icon:"📞",color:"#39c95b",dock:true},
-  {id:"safari",name:"Safari",icon:"🧭",color:"#f7f7f7",dock:true},
-  {id:"messages",name:"メッセージ",icon:"💬",color:"#34c759",dock:true},
-  {id:"photos",name:"写真",icon:"🌸",color:"#fff",dock:true}
-];
 const $ = s => document.querySelector(s);
-const screens = ["lockScreen","passScreen","homeScreen","appScreen"];
-let entered = "";
+
+const iconSvg = {
+  messages: `<svg viewBox="0 0 100 100"><defs><linearGradient id="gmsg" x2="0" y2="1"><stop stop-color="#52ed75"/><stop offset="1" stop-color="#08bd45"/></linearGradient></defs><rect x="2" y="2" width="96" height="96" rx="25" fill="url(#gmsg)"/><path d="M20 47c0-17 13-28 31-28s30 11 30 27-13 27-30 27c-6 0-11-1-15-3L23 80l3-15c-4-5-6-11-6-18Z" fill="#f4fff5" stroke="#d8ffe0" stroke-width="3"/></svg>`,
+  kakao: `<svg viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="25" fill="#ffdc00"/><ellipse cx="50" cy="45" rx="32" ry="25" fill="#392d20"/><path d="m32 62-5 18 21-14" fill="#392d20"/><text x="50" y="51" text-anchor="middle" font-size="17" font-weight="bold" fill="#ffe600">TALK</text></svg>`,
+  instagram: `<svg viewBox="0 0 100 100"><defs><linearGradient id="iggrad" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#ffd04a"/><stop offset=".45" stop-color="#ff315e"/><stop offset="1" stop-color="#8b35e8"/></linearGradient></defs><rect x="2" y="2" width="96" height="96" rx="25" fill="url(#iggrad)"/><rect x="23" y="23" width="54" height="54" rx="17" fill="none" stroke="white" stroke-width="7"/><circle cx="50" cy="50" r="13" fill="none" stroke="white" stroke-width="7"/><circle cx="69" cy="31" r="4" fill="white"/></svg>`,
+  photos: `<svg viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="25" fill="white"/><g transform="translate(50 50)"><ellipse cy="-19" rx="9" ry="18" fill="#ff453a"/><ellipse cy="19" rx="9" ry="18" fill="#34c759"/><ellipse cx="-19" rx="18" ry="9" fill="#bf5af2"/><ellipse cx="19" rx="18" ry="9" fill="#ff9f0a"/><ellipse cx="-14" cy="-14" rx="9" ry="17" transform="rotate(-45 -14 -14)" fill="#0a84ff"/><ellipse cx="14" cy="-14" rx="9" ry="17" transform="rotate(45 14 -14)" fill="#ffd60a"/><ellipse cx="-14" cy="14" rx="9" ry="17" transform="rotate(45 -14 14)" fill="#5e5ce6"/><ellipse cx="14" cy="14" rx="9" ry="17" transform="rotate(-45 14 14)" fill="#30d158"/></g></svg>`,
+  camera: `<svg viewBox="0 0 100 100"><defs><linearGradient id="cam" x2="0" y2="1"><stop stop-color="#ddd"/><stop offset="1" stop-color="#aaa"/></linearGradient><radialGradient id="lens"><stop stop-color="#d8faff"/><stop offset=".25" stop-color="#3487d8"/><stop offset=".65" stop-color="#111a35"/><stop offset="1" stop-color="#555"/></radialGradient></defs><rect x="2" y="2" width="96" height="96" rx="25" fill="url(#cam)"/><circle cx="50" cy="50" r="35" fill="#252833"/><circle cx="50" cy="50" r="29" fill="#111"/><circle cx="50" cy="50" r="23" fill="url(#lens)"/><circle cx="41" cy="40" r="6" fill="#fff" opacity=".8"/></svg>`,
+  youtube: `<svg viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="25" fill="white"/><rect x="17" y="29" width="66" height="43" rx="13" fill="#ff1744"/><path d="M45 39v23l19-11.5Z" fill="white"/></svg>`,
+  x: `<svg viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="25" fill="#050505"/><path d="M26 22h17l31 56H57L26 22Zm9 0 39 56h-8L27 22h8Zm40 0L35 78h9l40-56h-9Z" fill="white"/></svg>`,
+  settings: `<svg viewBox="0 0 100 100"><defs><linearGradient id="set" x2="0" y2="1"><stop stop-color="#aaa"/><stop offset="1" stop-color="#555"/></linearGradient></defs><rect x="2" y="2" width="96" height="96" rx="25" fill="url(#set)"/><circle cx="50" cy="50" r="30" fill="none" stroke="#eee" stroke-width="8" stroke-dasharray="8 5"/><circle cx="50" cy="50" r="18" fill="none" stroke="#ddd" stroke-width="7"/><circle cx="50" cy="50" r="6" fill="#eee"/></svg>`,
+  notes: `<svg viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="25" fill="#fff"/><path d="M3 27h94v13H3Z" fill="#ffd83d"/><path d="M18 54h64M18 70h64" stroke="#bbb" stroke-width="4" stroke-linecap="round"/></svg>`,
+  calendar: `<svg viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="25" fill="white"/><path d="M3 27h94v14H3Z" fill="#ffd83d"/><text x="50" y="31" text-anchor="middle" font-size="10" fill="#555">月</text><text x="50" y="78" text-anchor="middle" font-size="42" fill="#222">2</text></svg>`,
+  safari: `<svg viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="25" fill="white"/><circle cx="50" cy="50" r="38" fill="#188cf2"/><circle cx="50" cy="50" r="32" fill="none" stroke="#bce9ff" stroke-width="2"/><path d="m65 32-9 24-22 13 10-24Z" fill="white"/><path d="m65 32-9 24-12-11Z" fill="#ff334f"/></svg>`,
+  music: `<svg viewBox="0 0 100 100"><defs><linearGradient id="mus" x2="0" y2="1"><stop stop-color="#ff5b79"/><stop offset="1" stop-color="#ee003c"/></linearGradient></defs><rect x="2" y="2" width="96" height="96" rx="25" fill="url(#mus)"/><path d="M61 22v43c0 9-21 13-21 2 0-8 11-11 19-9V31l22-5v34c0 9-21 13-21 2" fill="none" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  phone: `<svg viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="25" fill="#32cf62"/><path d="M33 23c-5 0-10 7-8 15 5 20 21 36 40 40 8 2 15-4 15-10l-2-9-16-7-8 9c-8-4-14-10-18-18l8-8-7-12Z" fill="white"/></svg>`,
+  mail: `<svg viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" rx="25" fill="#39c9ed"/><path d="M20 31h60v42H20Z" fill="white"/><path d="m21 33 29 24 29-24" fill="none" stroke="#8ddcf3" stroke-width="5"/></svg>`
+};
+
+const apps = [
+  {id:"messages",name:"メッセージ",icon:"messages",badge:"89"},
+  {id:"kakao",name:"KakaoTalk",icon:"kakao"},
+  {id:"instagram",name:"Instagram",icon:"instagram",badge:"10"},
+  {id:"photos",name:"写真",icon:"photos"},
+  {id:"messages",name:"メッセージ",icon:"messages",badge:"89"},
+  {id:"camera",name:"カメラ",icon:"camera"},
+  {id:"youtube",name:"YouTube",icon:"youtube"},
+  {id:"x",name:"X",icon:"x"},
+  {id:"settings",name:"設定",icon:"settings",badge:"3"},
+  {id:"notes",name:"メモ",icon:"notes"},
+  {id:"calendar",name:"カレンダー",icon:"calendar"},
+  {id:"safari",name:"Safari",icon:"safari"},
+  {id:"music",name:"ミュージック",icon:"music"}
+];
+const dockApps = [
+  {id:"phone",name:"電話",icon:"phone"},
+  {id:"safari",name:"Safari",icon:"safari"},
+  {id:"messages",name:"メッセージ",icon:"messages",badge:"89"},
+  {id:"mail",name:"メール",icon:"mail"}
+];
+
+function iconHTML(app) {
+  return `<button class="app-icon" data-app="${app.id}" aria-label="${app.name}">
+    <span class="icon">${iconSvg[app.icon]}${app.badge?`<span class="badge">${app.badge}</span>`:""}</span>
+    <span>${app.name}</span></button>`;
+}
+$("#appGrid").innerHTML=apps.map(iconHTML).join("");
+$("#dock").innerHTML=dockApps.map(iconHTML).join("");
+
+/* ロック解除 */
+const screenIds=["lockScreen","passScreen","homeScreen","appScreen"];
+let entered="";
 function showScreen(id) {
-  screens.forEach(s => $("#"+s).classList.toggle("active", s===id));
-  $("#lockWall").style.display = id==="lockScreen" || id==="passScreen" ? "" : "none";
-  $("#homeWall").style.display = id==="homeScreen" || id==="appScreen" ? "" : "none";
+  screenIds.forEach(s=>$("#"+s).classList.toggle("active",s===id));
+  $("#lockWall").style.display=(id==="lockScreen"||id==="passScreen")?"":"none";
+  $("#homeWall").style.display=(id==="homeScreen"||id==="appScreen")?"":"none";
+  if(id!=="appScreen") $("#appScreen").classList.remove("instagram-mode");
 }
-function makeIcon(a) {
-  return `<button class="app-icon" data-app="${a.id}"><span class="icon" style="background:${a.color}">${a.icon}</span><span>${a.name}</span></button>`;
-}
-$("#appGrid").innerHTML = apps.filter(a=>!a.dock).map(makeIcon).join("");
-$("#dock").innerHTML = apps.filter(a=>a.dock).map(a=>`<button class="app-icon" data-app="${a.id}" aria-label="${a.name}"><span class="icon" style="background:${a.color}">${a.icon}</span></button>`).join("");
-const keys = ["1","2","3","4","5","6","7","8","9","back","0","clear"];
-$("#keypad").innerHTML = keys.map(k => k==="back"
+const keys=["1","2","3","4","5","6","7","8","9","back","0","clear"];
+$("#keypad").innerHTML=keys.map(k=>k==="back"
   ? `<button class="text-button" data-key="back" style="font-size:22px">⌫</button>`
   : k==="clear" ? `<button class="text-button" data-key="clear">消去</button>`
   : `<button class="key ${k==="0"?"zero":""}" data-key="${k}">${k}<small>${({2:"ABC",3:"DEF",4:"GHI",5:"JKL",6:"MNO",7:"PQRS",8:"TUV",9:"WXYZ"})[k]||""}</small></button>`
 ).join("");
 function updateDots() {
-  $("#dots").innerHTML = [0,1,2,3].map(i=>`<span class="dot ${i<entered.length?"filled":""}"></span>`).join("");
+  $("#dots").innerHTML=[0,1,2,3].map(i=>`<span class="dot ${i<entered.length?"filled":""}"></span>`).join("");
 }
-function keyInput(k) {
+function enterKey(k) {
   if(k==="back") entered=entered.slice(0,-1);
   else if(k==="clear") entered="";
   else if(entered.length<4) entered+=k;
   $("#error").textContent="";
   updateDots();
   if(entered.length===4) {
-    if(entered==="0629") {
-      setTimeout(()=>{entered=""; showScreen("homeScreen");},180);
-    } else {
+    if(entered==="0629") setTimeout(()=>{entered="";showScreen("homeScreen");},170);
+    else {
       $("#error").textContent="パスコードが違います";
       setTimeout(()=>{entered="";updateDots();},700);
     }
   }
 }
-$("#keypad").addEventListener("click",e=>{const k=e.target.closest("[data-key]")?.dataset.key;if(k)keyInput(k);});
+$("#keypad").addEventListener("click",e=>{
+  const key=e.target.closest("[data-key]")?.dataset.key;
+  if(key) enterKey(key);
+});
 $("#lockScreen").addEventListener("click",()=>{entered="";updateDots();showScreen("passScreen");});
 $("#cancelPass").onclick=()=>showScreen("lockScreen");
 $("#emergency").onclick=()=>alert("ゲーム内のデモです。緊急通報は行いません。");
-$("#appGrid").addEventListener("click",openApp);
-$("#dock").addEventListener("click",openApp);
-$("#backHome").onclick=()=>showScreen("homeScreen");
-$("#homebar").onclick=()=> {
+$("#homebar").onclick=()=>{
   if($("#appScreen").classList.contains("active")) showScreen("homeScreen");
   else if($("#passScreen").classList.contains("active")) showScreen("lockScreen");
 };
@@ -253,52 +392,251 @@ $("#phone").addEventListener("touchend",e=>{
   }
 },{passive:true});
 
-function openApp(e) {
-  const id=e.target.closest("[data-app]")?.dataset.app;
-  if(!id)return;
-  renderApp(id); showScreen("appScreen");
-}
-function renderApp(id) {
-  const names={photos:"写真",camera:"カメラ",calendar:"カレンダー",clock:"時計",settings:"設定",instagram:"Instagram",maps:"マップ",notes:"メモ","appstore":"App Store",music:"ミュージック",phone:"電話",safari:"Safari",messages:"メッセージ"};
-  $("#appTitle").textContent=names[id]||"アプリ";
-  const body=$("#appBody");
-  const views={
-    settings:`<div class="card"><h3>壁紙</h3><p>ロック画面とホーム画面の画像を選べます。</p><button class="mock-button" onclick="document.querySelector('#lockPicker').click()">ロック画面を選ぶ</button><button class="mock-button" onclick="document.querySelector('#homePicker').click()">ホーム画面を選ぶ</button></div><div class="card">通知　　サウンド　　画面表示</div><p style="text-align:center;color:#777">このゲームのパスコードは 0629</p>`,
-    instagram:`<div class="instagram-body"><div class="ig-head">Instagram <span>＋　♡　✉</span></div><div class="story-row">${["あなた","mika","haru","sora","yuki"].map((n,i)=>`<div class="story"><div><i></i></div>${n}</div>`).join("")}</div><div class="post"><div class="post-head"><span class="avatar">🌼</span> daily.mood　　•••</div><div class="post-image">🌅</div><div class="post-actions"><button class="like">♡</button><button>▢</button><button>➤</button><span style="float:right">♧</span><div style="font-size:13px;padding-top:5px">「いいね！」 いい一日になりますように ✨</div></div></div><div class="post"><div class="post-head"><span class="avatar">🐈</span> neko_days　　•••</div><div class="post-image" style="background:linear-gradient(130deg,#f3d2ad,#aaa4c5)">🐈</div><div class="post-actions"><button class="like">♡</button><button>▢</button><button>➤</button></div></div><nav style="display:flex;justify-content:space-around;padding:10px">⌂　⌕　＋　♡　●</nav></div>`,
-    photos:`<div class="card"><h2>ライブラリ</h2><p>最近の項目　　選択</p><div class="photo-grid">${Array.from({length:12},(_,i)=>`<div class="photo-tile" style="background:linear-gradient(${i*35}deg,#d6b2a8,#77718c,#343342)"></div>`).join("")}</div></div>`,
-    camera:`<div style="height:70%;background:linear-gradient(140deg,#37343c,#8d8190,#17171b);border-radius:20px;display:grid;place-items:center;font-size:40px">カメラ プレビュー</div><div style="text-align:center;padding:20px"><button class="mock-button" style="border-radius:50%;width:65px;height:65px;background:white" onclick="alert('撮影しました（デモ）')">●</button></div>`,
-    calendar:`<div class="card"><h2>6月　2025</h2><p>月　火　水　木　金　土　日</p><p style="line-height:2.5">　　1　2　3　4　5　6　7<br>8　9　10　11　12　13　14<br>15　16　17　18　19　20　21<br>22　23　24　25　26　27　28<br>29　30</p></div><div class="card">今日の予定はありません</div>`,
-    clock:`<div class="card" style="text-align:center;padding:45px 10px"><div style="font-size:58px">🕘</div><h2 id="liveClock">9:41</h2>世界時計　アラーム　ストップウォッチ　タイマー</div>`,
-    maps:`<div style="height:70%;border-radius:18px;background:linear-gradient(30deg,#dce9d2,#f1e8ce,#d6e5ef);display:grid;place-items:center;color:#555;font-size:25px">🗺️<br><small>地図のデモ画面</small></div><input class="field" placeholder="場所を検索">`,
-    notes:`<textarea class="field" style="height:70%;resize:none" placeholder="メモを入力…"></textarea>`,
-    appstore:`<div class="card"><h2>見つけよう</h2><input class="field" placeholder="ゲーム、アプリを検索"><p>おすすめアプリ</p>📱　便利なアプリを探す</div>`,
-    music:`<div class="card" style="text-align:center;padding:50px 15px"><div style="font-size:70px">🎵</div><h2>ミュージック</h2><p>お気に入りの曲を再生</p><button class="mock-button" onclick="this.textContent=this.textContent==='▶ 再生'?'⏸ 一時停止':'▶ 再生'">▶ 再生</button></div>`,
-    phone:`<div class="card"><input class="field" placeholder="連絡先を検索"><h3>よく使う項目</h3><p>👤　デモ連絡先</p><div style="text-align:center;font-size:24px;line-height:2.5">1　　2　　3<br>4　　5　　6<br>7　　8　　9<br>*　　0　　#</div><button class="mock-button">📞 通話（デモ）</button></div>`,
-    safari:`<input class="field" placeholder="検索またはWebサイト名を入力"><div class="card" style="margin-top:18px;text-align:center"><h2>お気に入り</h2>よく見るサイトをここに表示します</div>`,
-    messages:`<div class="card"><h2>メッセージ</h2><input class="field" placeholder="検索"><p>👤　あおい　　こんにちは！</p><hr><p>👤　家族　　　またあとでね</p><hr><p>👤　ゆう　　　写真ありがとう</p></div>`
-  };
-  body.innerHTML=views[id]||`<div class="card">${names[id]} のデモ画面</div>`;
-  body.querySelectorAll(".like").forEach(b=>b.onclick=()=>b.textContent=b.textContent==="♡"?"♥":"♡");
-}
+/* 壁紙選択 */
 function setWallpaper(input,selector) {
   input.addEventListener("change",()=>{
     const file=input.files[0]; if(!file)return;
     const reader=new FileReader();
-    reader.onload=()=>document.querySelector(selector).style.backgroundImage=`url("${reader.result}")`;
+    reader.onload=()=>$(selector).style.backgroundImage=`url("${reader.result}")`;
     reader.readAsDataURL(file);
   });
 }
 setWallpaper($("#lockPicker"),"#lockWall");
 setWallpaper($("#homePicker"),"#homeWall");
 
+/* アプリ表示 */
+$("#appGrid").addEventListener("click",openApp);
+$("#dock").addEventListener("click",openApp);
+$("#backHome").onclick=()=>showScreen("homeScreen");
+
+function openApp(e) {
+  const id=e.target.closest("[data-app]")?.dataset.app;
+  if(!id)return;
+  renderApp(id);
+  showScreen("appScreen");
+}
+function renderApp(id) {
+  const names={
+    instagram:"Instagram",settings:"設定",photos:"写真",camera:"カメラ",
+    kakao:"KakaoTalk",youtube:"YouTube",x:"X",notes:"メモ",calendar:"カレンダー",
+    safari:"Safari",music:"ミュージック",messages:"メッセージ",phone:"電話",mail:"メール"
+  };
+  $("#appTitle").textContent=names[id]||"アプリ";
+  $("#appScreen").classList.toggle("instagram-mode",id==="instagram");
+  const body=$("#appBody");
+
+  if(id==="instagram") {
+    renderInstagram();
+    return;
+  }
+
+  const views={
+    settings:`<div class="card"><h3>壁紙</h3><p>ロック画面とホーム画面の画像を選べます。</p><button class="mock-button" onclick="document.querySelector('#lockPicker').click()">ロック画面を選ぶ</button><button class="mock-button" onclick="document.querySelector('#homePicker').click()">ホーム画面を選ぶ</button></div><div class="card">通知　　サウンド　　画面表示</div><p style="text-align:center;color:#777">このゲームのパスコードは 0629</p>`,
+    photos:`<div class="card"><h2>写真</h2><p>写真アプリのデモ画面</p><div class="photo-grid">${Array.from({length:9},(_,i)=>`<div class="photo-tile" style="background:linear-gradient(${i*34}deg,#d6b2a8,#77718c,#343342)"></div>`).join("")}</div></div>`,
+    camera:`<div style="height:70%;background:linear-gradient(140deg,#37343c,#8d8190,#17171b);border-radius:20px;display:grid;place-items:center;color:white">カメラ プレビュー</div><div style="text-align:center;padding:20px"><button class="mock-button" style="border-radius:50%;width:65px;height:65px;background:white" onclick="alert('撮影しました（デモ）')">●</button></div>`,
+    calendar:`<div class="card"><h2>カレンダー</h2><p>月　火　水　木　金　土　日</p><p style="line-height:2.5">　　1　2　3　4　5　6　7<br>8　9　10　11　12　13　14<br>15　16　17　18　19　20　21<br>22　23　24　25　26　27　28<br>29　30</p></div>`,
+    notes:`<textarea class="field" style="height:70%;resize:none" placeholder="メモを入力…"></textarea>`,
+    safari:`<input class="field" placeholder="検索またはWebサイト名を入力"><div class="card" style="margin-top:18px;text-align:center"><h2>お気に入り</h2>Safariのデモ画面</div>`,
+    music:`<div class="card" style="text-align:center;padding:50px 15px"><div style="font-size:70px">🎵</div><h2>ミュージック</h2><p>お気に入りの曲を再生</p><button class="mock-button" onclick="this.textContent=this.textContent==='▶ 再生'?'⏸ 一時停止':'▶ 再生'">▶ 再生</button></div>`,
+    messages:`<div class="card"><h2>メッセージ</h2><p>👤　あおい　こんにちは！（デモ）</p><hr><p>👤　家族　またあとでね（デモ）</p></div>`,
+    kakao:`<div class="card"><h2>KakaoTalk</h2><p>トーク一覧（デモ）</p><p>👤　友だち</p></div>`,
+    youtube:`<div class="card"><h2>YouTube</h2><p>動画一覧（デモ画面）</p>▶　おすすめ動画</div>`,
+    x:`<div class="card"><h2>X</h2><p>タイムライン（デモ画面）</p></div>`,
+    phone:`<div class="card"><h2>電話</h2><p>連絡先・通話のデモ画面</p><div style="text-align:center;font-size:23px;line-height:2.4">1　2　3<br>4　5　6<br>7　8　9<br>*　0　#</div></div>`,
+    mail:`<div class="card"><h2>メール</h2><p>受信トレイ（デモ画面）</p></div>`
+  };
+  body.innerHTML=views[id]||`<div class="card">${names[id]||"アプリ"}のデモ画面</div>`;
+}
+
+/* Instagramのゲーム内データ */
+let profileImage="";
+let userPosts=[];
+let dmMessages=[
+  {text:"FUMA：やっほー！",mine:false},
+  {text:"FUMA：元気？",mine:false}
+];
+let currentIgTab="home";
+let viewingStory="";
+
+function avatarMarkup(extra="") {
+  return profileImage
+    ? `<img ${extra} src="${profileImage}" alt="プロフィール画像">`
+    : `<span ${extra}>☺</span>`;
+}
+function igNav(active) {
+  return `<nav class="ig-nav">
+    <button class="${active==="home"?"active":""}" data-ig="home" aria-label="ホーム">⌂</button>
+    <button disabled title="リール（表示のみ）" aria-label="リール（表示のみ）">▣</button>
+    <button class="${active==="dm"?"active":""}" data-ig="dm" aria-label="DM">➤</button>
+    <button disabled title="検索（表示のみ）" aria-label="検索（表示のみ）">⌕</button>
+    <button class="${active==="profile"?"active":""}" data-ig="profile" aria-label="プロフィール"><span class="ig-nav-avatar">${avatarMarkup()}</span></button>
+  </nav>`;
+}
+function renderInstagram(tab="home") {
+  currentIgTab=tab;
+  const body=$("#appBody");
+  if(tab==="dm") {
+    body.innerHTML=`<div class="ig"><div class="dm-page">
+      <div class="dm-top">‹　fs2xa__　　メッセージ</div>
+      <div class="dm-person"><span class="ig-avatar-small">F</span><div><b>FUMA</b><br><small>@fm__629</small></div></div>
+      <div class="dm-messages" id="dmMessages"></div>
+      <form class="dm-compose" id="dmForm"><input id="dmInput" placeholder="メッセージを送信…" autocomplete="off"><button>送信</button></form>
+    </div>${igNav("dm")}<div class="ig-modal" id="storyModal"><button data-close-story>×</button></div></div>`;
+    const list=$("#dmMessages");
+    list.innerHTML=dmMessages.map(m=>`<div class="dm-bubble ${m.mine?"mine":""}">${escapeHTML(m.text)}</div>`).join("");
+    list.scrollTop=list.scrollHeight;
+    $("#dmForm").addEventListener("submit",e=>{
+      e.preventDefault();
+      const input=$("#dmInput"), text=input.value.trim();
+      if(!text)return;
+      dmMessages.push({text,mine:true});
+      dmMessages.push({text:"FUMA：メッセージありがとう！",mine:false});
+      renderInstagram("dm");
+    });
+    bindIgNav();
+    return;
+  }
+
+  if(tab==="profile") {
+    const tiles=userPosts.length
+      ? userPosts.map(p=>`<div class="ig-grid-item"><img src="${p.src}" alt="投稿写真"></div>`).join("")
+      : Array.from({length:6},(_,i)=>`<div class="ig-grid-item" style="background:linear-gradient(${i*38}deg,#d8c4bb,#827b93,#353242)"></div>`).join("");
+    body.innerHTML=`<div class="ig">
+      <div class="ig-main">
+        <div class="ig-profile">
+          <div class="ig-username-row"><span>fs2xa__　⌄</span><span>＋　☰</span></div>
+          <div class="ig-profile-top">
+            <button class="ig-profile-avatar" id="chooseProfile" aria-label="プロフィール写真を選ぶ">${avatarMarkup()}</button>
+            <div class="ig-stats">
+              <div><b>${userPosts.length}</b>投稿</div>
+              <div><b>1</b>フォロワー</div>
+              <div><b>1</b>フォロー中</div>
+            </div>
+          </div>
+          <div class="ig-name"><b>fs2xa__</b><br>日々の記録 ✨</div>
+          <div class="ig-private">🔒 非公開アカウント<br>フォロワー：<b>@fm__629</b><br>フォロー中：<b>@fm__629</b></div>
+          <div class="ig-profile-actions">
+            <button id="editProfile">プロフィールを編集</button>
+            <button>プロフィールをシェア</button>
+          </div>
+          <div class="ig-highlight-row">
+            <div class="ig-highlight"><div class="ig-highlight-circle">＋</div>新規</div>
+            <div class="ig-highlight"><div class="ig-highlight-circle">🌿</div>日常</div>
+            <div class="ig-highlight"><div class="ig-highlight-circle">☁️</div>思い出</div>
+          </div>
+          <div class="ig-profile-tabs"><span>▦</span><span>▣</span><span>♙</span></div>
+          <div class="ig-grid">${tiles}</div>
+        </div>
+      </div>${igNav("profile")}
+      <div class="ig-modal" id="storyModal"><button data-close-story>×</button></div>
+    </div>`;
+    $("#chooseProfile").onclick=()=>$("#profilePicker").click();
+    $("#editProfile").onclick=()=>$("#profilePicker").click();
+    bindIgNav();
+    return;
+  }
+
+  const posts = [
+    ...userPosts,
+    {src:"",caption:"今日の思い出 ☁️",owner:"fm__629",placeholder:"🌅"},
+    {src:"",caption:"いい一日になりますように ✨",owner:"fm__629",placeholder:"🌼"}
+  ];
+  const stories=["あなた","fm__629","friend","daily"];
+  body.innerHTML=`<div class="ig">
+    <div class="ig-main">
+      <header class="ig-header">
+        <div class="ig-head-actions"><button id="addPost" aria-label="写真を投稿">＋</button></div>
+        <span class="ig-logo">Instagram</span>
+        <div class="ig-head-actions"><span>♡</span><button data-ig="dm" aria-label="DM">➤</button></div>
+      </header>
+      <div class="story-row">
+        ${stories.map((name,i)=>`<button class="story" data-story="${name}">
+          <div class="story-ring"><div class="story-avatar">${i===0?avatarMarkup():(i===1?`<b>F</b>`:"🌿")}</div></div>
+          ${name}
+        </button>`).join("")}
+      </div>
+      ${posts.map((p,i)=>`<article class="ig-post">
+        <div class="ig-post-header"><span class="ig-avatar-small">${p.owner==="fs2xa__"?avatarMarkup():"F"}</span><b>${p.owner||"fm__629"}</b><span style="margin-left:auto">•••</span></div>
+        <div class="ig-post-picture">${p.src?`<img src="${p.src}" alt="フィード写真">`:`<span>${p.placeholder}</span>`}</div>
+        <div class="ig-post-actions"><button class="likeButton">♡</button><button>▢</button><button data-ig="dm">➤</button><button class="save">♧</button></div>
+        <div class="ig-caption"><b>${p.owner||"fm__629"}</b>　${escapeHTML(p.caption||"写真を投稿しました ✨")}<br><span style="color:#888">コメントを表示</span></div>
+      </article>`).join("")}
+    </div>
+    ${igNav("home")}
+    <div class="ig-modal" id="storyModal"><button data-close-story>×</button><div id="storyContent"></div></div>
+  </div>`;
+
+  $("#addPost").onclick=()=>$("#feedPicker").click();
+  body.querySelectorAll(".likeButton").forEach(b=>b.onclick=()=>{
+    b.textContent=b.textContent==="♡"?"♥":"♡";
+    b.style.color=b.textContent==="♥"?"#ed4956":"";
+  });
+  body.querySelectorAll("[data-story]").forEach(b=>b.onclick=()=>openStory(b.dataset.story));
+  bindIgNav();
+
+  const feedPicker=$("#feedPicker");
+  feedPicker.onchange=async()=>{
+    const files=[...feedPicker.files].filter(f=>f.type.startsWith("image/"));
+    for(const file of files) {
+      const src=await readFile(file);
+      userPosts.unshift({src,caption:"新しい写真 ✨",owner:"fs2xa__"});
+    }
+    feedPicker.value="";
+    renderInstagram("home");
+  };
+}
+function bindIgNav() {
+  $("#appBody").querySelectorAll("[data-ig]").forEach(button=>{
+    button.onclick=()=>{
+      const tab=button.dataset.ig;
+      if(tab==="home"||tab==="dm"||tab==="profile") renderInstagram(tab);
+    };
+  });
+  const modal=$("#storyModal");
+  if(modal) {
+    modal.querySelector("[data-close-story]")?.addEventListener("click",()=>modal.classList.remove("show"));
+    modal.addEventListener("click",e=>{if(e.target===modal)modal.classList.remove("show");});
+  }
+}
+function openStory(name) {
+  const modal=$("#storyModal");
+  if(!modal)return;
+  const content=$("#storyContent");
+  content.innerHTML=`<div style="text-align:center;font-size:20px"><div style="font-size:65px;margin-bottom:15px">${name==="fm__629"?"🪻":"☁️"}</div>${escapeHTML(name)} のストーリー<br><small>ストーリーのデモ表示</small></div>`;
+  modal.classList.add("show");
+}
+function readFile(file) {
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result);
+    reader.onerror=reject;
+    reader.readAsDataURL(file);
+  });
+}
+$("#profilePicker").addEventListener("change",async()=>{
+  const file=$("#profilePicker").files[0];
+  if(!file||!file.type.startsWith("image/"))return;
+  profileImage=await readFile(file);
+  $("#profilePicker").value="";
+  if($("#appScreen").classList.contains("active") && $("#appScreen").classList.contains("instagram-mode")) {
+    renderInstagram(currentIgTab);
+  }
+});
+function escapeHTML(value) {
+  return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+/* 時計 */
 function updateTime() {
   const now=new Date();
-  $("#clockStatus").textContent=now.toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"});
-  $("#timeText").textContent=now.toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"});
+  const time=now.toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"});
+  $("#clockStatus").textContent=time;
+  $("#timeText").textContent=time;
   $("#dateText").textContent=now.toLocaleDateString("ja-JP",{month:"long",day:"numeric",weekday:"short"});
   $("#homeDate").textContent=now.toLocaleDateString("ja-JP",{month:"long",day:"numeric",weekday:"short"});
 }
-updateTime(); setInterval(updateTime,10000);
+updateTime();
+setInterval(updateTime,10000);
 updateDots();
 </script>
 </body>
