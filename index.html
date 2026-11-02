@@ -2,788 +2,304 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>My iPhone</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>iPhone風ミニゲーム</title>
 <style>
 :root {
-  --wall-lock: linear-gradient(160deg,#1b2023,#44413c 48%,#15141b);
-  --wall-home: linear-gradient(160deg,#252c36,#5c6570 52%,#171c26);
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: #080808;
-  color: #fff;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-}
-
-button, input { font: inherit; }
-
-.phone {
-  position: relative;
-  width: 100%;
-  max-width: 430px;
-  height: 100dvh;
-  min-height: 620px;
-  margin: 0 auto;
-  overflow: hidden;
-  background: #111;
-}
-
-.wall {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-}
-
-.wall::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom,rgba(0,0,0,.26),transparent 35%,rgba(0,0,0,.16));
-}
-
-.status {
-  position: absolute;
-  z-index: 3;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 54px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 24px;
-  font-size: 15px;
-  font-weight: 650;
-  text-shadow: 0 1px 4px #0008;
-}
-
-.status-right { display: flex; gap: 6px; align-items: center; }
-.island {
-  position: absolute;
-  z-index: 4;
-  width: 126px;
-  height: 34px;
-  top: 11px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #000;
-  border-radius: 22px;
-}
-
-.view {
-  position: absolute;
-  inset: 0;
-  display: none;
-  overflow: hidden;
-}
-.view.active { display: block; }
-
-/* ロック画面 */
-#lock .wall { background-image: var(--wall-lock); }
-.lock-content {
-  position: absolute;
-  z-index: 2;
-  inset: 0;
-  text-align: center;
-  padding-top: 95px;
-}
-.lock-date {
-  margin-top: 17px;
-  font-size: 18px;
-  font-weight: 600;
-  text-shadow: 0 2px 8px #0008;
-}
-.lock-time {
-  margin-top: 7px;
-  font-size: clamp(76px, 21vw, 104px);
-  line-height: 1;
-  font-weight: 650;
-  letter-spacing: -5px;
-  text-shadow: 0 2px 12px #0008;
-}
-.lock-note {
-  margin: 28px auto 0;
-  width: calc(100% - 32px);
-  text-align: left;
-  padding: 13px 15px;
-  border-radius: 17px;
-  background: #ffffff24;
-  backdrop-filter: blur(18px);
-  font-size: 14px;
-}
-.lock-bottom {
-  position: absolute;
-  z-index: 3;
-  bottom: 24px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-.round-control {
-  width: 48px;
-  height: 48px;
-  border: 0;
+  --lock-wall: linear-gradient(145deg,#26222d,#777080 42%,#1c1b25 76%,#48404f);
+  --home-wall: linear-gradient(150deg,#4f5265,#a58a9b 45%,#272634 85%);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: white;
-  background: #202027aa;
-  border-radius: 50%;
-  font-size: 21px;
-  cursor: pointer;
 }
-.unlock-hint {
-  position: absolute;
-  z-index: 3;
-  bottom: 82px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 13px;
-  color: #ffffffc9;
-  cursor: pointer;
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100dvh; display: grid; place-items: center;
+  background: #101014; color: white;
 }
-.home-indicator {
-  position: absolute;
-  z-index: 5;
-  left: 50%;
-  bottom: 8px;
-  transform: translateX(-50%);
-  width: 135px;
-  height: 5px;
-  border-radius: 5px;
-  background: #fff;
+.phone {
+  position: relative; width: min(100vw, 430px); height: min(100dvh, 932px);
+  overflow: hidden; background: #111; isolation: isolate;
 }
-
-/* パスコード画面 */
-#passcode .wall {
-  background-image: var(--wall-lock);
-  filter: blur(16px);
-  transform: scale(1.08);
+@media (min-width: 500px) {
+  .phone { border: 7px solid #29292d; border-radius: 52px; box-shadow: 0 20px 70px #0009; }
 }
-.pass-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  background: #09090a45;
+.wall {
+  position: absolute; inset: 0; z-index: -2; background-size: cover;
+  background-position: center; transition: background .25s;
 }
-.pass-title {
-  position: absolute;
-  top: 155px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 19px;
+.wall.lock { background: var(--lock-wall); }
+.wall.home { background: var(--home-wall); }
+.wall.lock::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(#08071222,#08071222);
 }
-.dots {
-  position: absolute;
-  top: 204px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  gap: 17px;
+.status {
+  position: absolute; z-index: 10; top: 0; left: 0; right: 0; height: 46px;
+  padding: 12px 25px 0; display: flex; justify-content: space-between;
+  font-size: 14px; font-weight: 700; text-shadow: 0 1px 5px #0008;
 }
-.dot {
-  width: 13px;
-  height: 13px;
-  border: 1.5px solid #fff;
-  border-radius: 50%;
+.status .right { letter-spacing: 2px; }
+.screen { position: absolute; inset: 0; display: none; }
+.screen.active { display: block; }
+#lockScreen { text-align: center; }
+.lock-date { margin-top: 102px; font-size: 16px; text-shadow: 0 1px 8px #0008; }
+.lock-time { font-size: clamp(68px, 19vw, 92px); line-height: 1.05; font-weight: 650; letter-spacing: -4px; }
+.lock-hint { position: absolute; bottom: 90px; left: 0; right: 0; font-size: 14px; opacity: .9; }
+.lock-shortcuts { position: absolute; bottom: 28px; left: 0; right: 0; display: flex; justify-content: space-around; }
+.shortcut {
+  border: 0; border-radius: 50%; width: 48px; height: 48px; color: white;
+  background: #ffffff55; font-size: 21px;
 }
-.dot.filled { background: #fff; }
+.island {
+  position: absolute; z-index: 12; top: 11px; left: 50%; transform: translateX(-50%);
+  width: 115px; height: 32px; border-radius: 25px; background: #050505;
+}
+#passScreen {
+  text-align: center; background: #08080b88; backdrop-filter: blur(22px);
+}
+.pass-title { margin-top: 150px; font-size: 19px; }
+.dots { display:flex; justify-content:center; gap: 17px; margin: 23px 0 43px; }
+.dot { width: 13px; height: 13px; border: 1.5px solid white; border-radius: 50%; }
+.dot.filled { background: white; }
 .keypad {
-  position: absolute;
-  top: 278px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 276px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 13px 16px;
+  width: 270px; margin: auto; display:grid; grid-template-columns:repeat(3,1fr);
+  gap: 13px 14px;
 }
 .key {
-  width: 78px;
-  height: 78px;
-  border: 0;
-  border-radius: 50%;
-  color: white;
-  background: #ffffff32;
-  font-size: 34px;
-  font-weight: 300;
-  cursor: pointer;
+  width: 78px; height: 78px; border:0; border-radius:50%;
+  color:white; background:#ffffff37; font-size:34px; font-weight:300;
 }
-.key:active { background: #ffffff65; }
-.key small {
-  display: block;
-  margin-top: -2px;
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 2px;
+.key:active { background:#ffffff70; }
+.key small { display:block; font-size:8px; font-weight:700; letter-spacing:2px; margin-top:-2px; }
+.key.zero { grid-column:2; }
+.pass-bottom {
+  position:absolute; bottom: 66px; left:0; right:0; display:flex;
+  justify-content:space-around; font-size:14px;
 }
-.pass-actions {
-  position: absolute;
-  bottom: 61px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-around;
-  font-size: 14px;
-}
-.text-button {
-  color: #fff;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-}
-
-/* ホーム画面 */
-#home .wall { background-image: var(--wall-home); }
-.home-content {
-  position: absolute;
-  z-index: 2;
-  inset: 0;
-  padding: 60px 18px 115px;
-}
+.text-button { border:0; background:none; color:white; font-size:14px; }
+#error { height:20px; color:#ffb5b5; font-size:14px; margin-top:-33px; }
+#homeScreen { padding: 65px 20px 24px; }
 .widget {
-  width: 48%;
-  min-height: 84px;
-  padding: 12px;
-  border-radius: 18px;
-  background: #ffffff44;
-  backdrop-filter: blur(15px);
-  box-shadow: 0 4px 18px #0002;
-  margin-bottom: 22px;
+  height: 112px; padding: 15px; margin: 0 0 23px; border-radius: 23px;
+  background:#ffffff37; backdrop-filter:blur(16px); display:flex; align-items:center;
+  justify-content:space-between; box-shadow:inset 0 0 0 1px #ffffff16;
 }
-.widget-title { font-size: 11px; opacity: .85; }
-.widget-main { margin-top: 7px; font-size: 15px; font-weight: 650; }
-.app-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  row-gap: 22px;
-  column-gap: 5px;
-}
+.widget strong { font-size: 19px; }
+.widget span { opacity:.86; font-size:13px; }
+.app-grid { display:grid; grid-template-columns:repeat(4,1fr); gap: 20px 10px; }
 .app-icon {
-  width: 57px;
-  height: 57px;
-  display: grid;
-  place-items: center;
-  margin: 0 auto 5px;
-  border-radius: 15px;
-  font-size: 31px;
-  color: #222;
-  background: linear-gradient(145deg,#fff,#e2e2e7);
-  box-shadow: 0 3px 9px #0005;
+  border:0; background:none; color:white; display:flex; flex-direction:column;
+  align-items:center; gap:5px; min-width:0; font-size:11px; text-shadow:0 1px 4px #000;
 }
-.app-button {
-  position: relative;
-  border: 0;
-  color: #fff;
-  background: transparent;
-  text-align: center;
-  font-size: 11px;
-  cursor: pointer;
-}
-.badge {
-  position: absolute;
-  top: -5px;
-  right: 13px;
-  min-width: 18px;
-  height: 18px;
-  line-height: 18px;
-  border-radius: 12px;
-  background: #ff3b30;
-  font-size: 10px;
-  font-weight: 700;
+.icon {
+  width:55px; height:55px; border-radius:15px; display:grid; place-items:center;
+  font-size:28px; text-shadow:none; box-shadow:0 4px 12px #0003;
 }
 .dock {
-  position: absolute;
-  z-index: 3;
-  left: 16px;
-  right: 16px;
-  bottom: 23px;
-  display: flex;
-  justify-content: space-around;
-  padding: 10px 5px;
-  border-radius: 25px;
-  background: #ffffff48;
-  backdrop-filter: blur(18px);
+  position:absolute; bottom:25px; left:14px; right:14px; height:83px;
+  border-radius:27px; background:#ffffff38; backdrop-filter:blur(18px);
+  display:flex; justify-content:space-around; align-items:center;
 }
-.dock .app-icon { margin-bottom: 0; }
-.dock .app-button { font-size: 0; }
-
-/* アプリ画面 */
-#appScreen {
-  z-index: 8;
-  background: #f5f5f7;
-  color: #17171a;
-  padding: 18px 16px 38px;
-  overflow-y: auto;
+.dock .icon { width:52px; height:52px; }
+#appScreen { background:#f5f5f7; color:#17171a; }
+.app-top {
+  height: 92px; padding: 53px 18px 10px; display:flex; align-items:center;
+  justify-content:space-between; font-weight:700; font-size:18px;
 }
-.app-header {
-  min-height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  border-bottom: 1px solid #e3e3e7;
-  padding-bottom: 10px;
-  font-weight: 700;
+.back { border:0; background:#e8e8eb; border-radius:50%; width:34px; height:34px; font-size:20px; }
+.app-body { height:calc(100% - 125px); overflow:auto; padding:16px; }
+.homebar {
+  position:absolute; z-index:20; bottom:7px; left:50%; transform:translateX(-50%);
+  width:135px; height:5px; background:white; border-radius:9px; cursor:pointer;
+  box-shadow:0 1px 4px #0007;
 }
-.app-header button, .soft-button {
-  border: 0;
-  border-radius: 10px;
-  padding: 8px 11px;
-  background: #e9e9ee;
-  color: #222;
-  cursor: pointer;
+#appScreen .homebar { background:#222; }
+.card {
+  background:white; border-radius:16px; padding:16px; margin-bottom:12px;
+  box-shadow:0 1px 4px #0000000d;
 }
-.app-body { padding-bottom: 25px; }
-.card, .post {
-  margin: 12px 0;
-  padding: 14px;
-  border-radius: 15px;
-  background: #fff;
-  box-shadow: 0 1px 5px #0000;
+.mock-button {
+  border:0; border-radius:12px; padding:11px 15px; background:#3478f6;
+  color:white; font-size:15px; margin:5px 5px 5px 0;
 }
-.post-user { font-weight: 700; }
-.post p { line-height: 1.5; }
-.muted { color: #777; font-size: 12px; }
-.chat-area { padding: 6px 0; }
-.bubble {
-  width: fit-content;
-  max-width: 84%;
-  margin: 9px 0;
-  padding: 11px 13px;
-  border-radius: 15px;
-  background: #ffe66b;
-  line-height: 1.45;
-}
-.bubble.them { background: #fff; }
-.chat-input {
-  display: flex;
-  gap: 7px;
-  margin-top: 12px;
-}
-.chat-input input, .plan-input {
-  min-width: 0;
-  flex: 1;
-  padding: 11px;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  background: #fff;
-}
-.send-button {
-  border: 0;
-  padding: 0 14px;
-  border-radius: 12px;
-  background: #ffe66b;
-  cursor: pointer;
-}
-.tab-row {
-  display: flex;
-  justify-content: space-around;
-  padding: 12px 0 4px;
-  color: #555;
-  font-size: 13px;
-}
-.profile-avatar {
-  width: 72px;
-  height: 72px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: #e7dfe9;
-  font-size: 32px;
-}
-.photo-tile {
-  min-height: 130px;
-  display: grid;
-  place-items: center;
-  border-radius: 15px;
-  background: linear-gradient(145deg,#293444,#9c8794);
-  font-size: 50px;
-}
-.settings-label {
-  display: block;
-  margin: 14px 0 5px;
-  font-weight: 650;
-}
-.file-input { width: 100%; padding: 10px 0; }
-.hint { color: #777; font-size: 12px; line-height: 1.5; }
+.field { width:100%; border:0; border-radius:12px; padding:13px; background:#eee; font-size:16px; }
+.photo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; }
+.photo-tile { aspect-ratio:1; border-radius:5px; background:linear-gradient(135deg,#c9a9a3,#55536d,#222); }
+.ig-head { display:flex; justify-content:space-between; align-items:center; font-size:22px; font-weight:700; }
+.story-row { display:flex; gap:12px; overflow:auto; padding:14px 0; }
+.story { min-width:57px; text-align:center; font-size:10px; }
+.story div { width:52px; height:52px; border-radius:50%; margin:auto auto 5px; background:linear-gradient(45deg,#f9b233,#de3980,#7355dc); padding:3px; }
+.story i { display:block; width:100%; height:100%; border-radius:50%; background:#ddd; border:2px solid white; }
+.post { background:white; border-radius:14px; overflow:hidden; margin-bottom:15px; }
+.post-head { padding:11px; display:flex; align-items:center; gap:9px; font-size:13px; font-weight:600; }
+.avatar { width:31px; height:31px; display:grid; place-items:center; border-radius:50%; background:linear-gradient(45deg,#f7a,#fd5); }
+.post-image { height:300px; display:grid; place-items:center; font-size:70px; background:linear-gradient(140deg,#dec9bf,#8b7786,#273141); }
+.post-actions { padding:10px 12px; font-size:22px; }
+.post-actions button { border:0; background:none; font-size:23px; padding:0 7px 0 0; }
+.instagram-body { padding:12px; background:#fafafa; }
 </style>
 </head>
-
 <body>
-<div class="phone">
+<main class="phone" id="phone">
+  <div class="wall lock" id="lockWall"></div>
+  <div class="wall home" id="homeWall" style="display:none"></div>
+  <div class="status"><span id="clockStatus">9:41</span><span class="right">● ▮▮▮  Wi-Fi  ▰</span></div>
+  <div class="island"></div>
 
-  <!-- ロック画面 -->
-  <section class="view active" id="lock">
-    <div class="wall"></div>
-    <div class="status">
-      <span id="statusTime">23:13</span>
-      <span class="status-right">●●●　◉　▰</span>
-    </div>
-    <div class="island"></div>
-    <div class="lock-content">
-      <div style="font-size:24px">🔒</div>
-      <div class="lock-date" id="lockDate">11월 2일 월요일</div>
-      <div class="lock-time" id="lockTime">23:13</div>
-      <div class="lock-note">
-        <b>💬 KakaoTalk</b><br>
-        ふうま：起きてる？少しだけ話したいな。
-      </div>
-    </div>
-    <div class="unlock-hint" onclick="showPasscode()">上にスワイプして開く<br>タップしてパスコードを入力</div>
-    <div class="lock-bottom">
-      <button class="round-control" onclick="showPasscode()">🔦</button>
-      <button class="round-control" onclick="showPasscode()">📷</button>
-    </div>
-    <div class="home-indicator"></div>
+  <section class="screen active" id="lockScreen">
+    <div class="lock-date" id="dateText"></div>
+    <div class="lock-time" id="timeText"></div>
+    <div class="lock-hint">上にスワイプしてロックを解除</div>
+    <div class="lock-shortcuts"><button class="shortcut">◉</button><button class="shortcut">▣</button></div>
   </section>
 
-  <!-- パスコード画面 -->
-  <section class="view" id="passcode">
-    <div class="wall"></div>
-    <div class="pass-overlay"></div>
-    <div class="status">
-      <span id="passStatusTime">23:13</span>
-      <span class="status-right">●●●　◉　▰</span>
-    </div>
-    <div class="island"></div>
+  <section class="screen" id="passScreen">
     <div class="pass-title">パスコードを入力</div>
-    <div class="dots" id="dots">
-      <span class="dot"></span><span class="dot"></span>
-      <span class="dot"></span><span class="dot"></span>
+    <div class="dots" id="dots"></div>
+    <div id="error"></div>
+    <div class="keypad" id="keypad"></div>
+    <div class="pass-bottom">
+      <button class="text-button" id="emergency">緊急</button>
+      <button class="text-button" id="cancelPass">キャンセル</button>
     </div>
-    <div class="keypad">
-      <button class="key" onclick="pressKey('1')">1</button>
-      <button class="key" onclick="pressKey('2')">2<small>ABC</small></button>
-      <button class="key" onclick="pressKey('3')">3<small>DEF</small></button>
-      <button class="key" onclick="pressKey('4')">4<small>GHI</small></button>
-      <button class="key" onclick="pressKey('5')">5<small>JKL</small></button>
-      <button class="key" onclick="pressKey('6')">6<small>MNO</small></button>
-      <button class="key" onclick="pressKey('7')">7<small>PQRS</small></button>
-      <button class="key" onclick="pressKey('8')">8<small>TUV</small></button>
-      <button class="key" onclick="pressKey('9')">9<small>WXYZ</small></button>
-      <span></span>
-      <button class="key" onclick="pressKey('0')">0</button>
-      <button class="key" onclick="deleteKey()" style="font-size:15px">⌫</button>
-    </div>
-    <div class="pass-actions">
-      <button class="text-button" onclick="alert('緊急通話はゲーム内では使えません。')">緊急通話</button>
-      <button class="text-button" onclick="showLock()">キャンセル</button>
-    </div>
-    <div class="home-indicator"></div>
   </section>
 
-  <!-- ホーム画面 -->
-  <section class="view" id="home">
-    <div class="wall"></div>
-    <div class="status">
-      <span id="homeStatusTime">23:13</span>
-      <span class="status-right">●●●　◉　▰</span>
-    </div>
-    <div class="island"></div>
-
-    <div class="home-content">
-      <div class="widget">
-        <div class="widget-title">月曜日　11月2日</div>
-        <div class="widget-main">今日の予定<br>ふうまとメッセージ 💬</div>
-      </div>
-
-      <div class="app-grid" id="appGrid"></div>
-    </div>
-
+  <section class="screen" id="homeScreen">
+    <div class="widget"><div><strong>こんにちは</strong><br><span id="homeDate"></span></div><span>天気 ☀️ 22°</span></div>
+    <div class="app-grid" id="appGrid"></div>
     <div class="dock" id="dock"></div>
-    <div class="home-indicator"></div>
   </section>
 
-  <!-- アプリ画面 -->
-  <section class="view" id="appScreen"></section>
-</div>
+  <section class="screen" id="appScreen">
+    <div class="app-top"><button class="back" id="backHome">‹</button><span id="appTitle"></span><span>•••</span></div>
+    <div class="app-body" id="appBody"></div>
+  </section>
+
+  <div class="homebar" id="homebar"></div>
+  <input type="file" id="lockPicker" accept="image/*" hidden>
+  <input type="file" id="homePicker" accept="image/*" hidden>
+</main>
 
 <script>
 const apps = [
-  {name:"写真", icon:"🌈"},
-  {name:"カメラ", icon:"📷"},
-  {name:"カレンダー", icon:"🗓️"},
-  {name:"設定", icon:"⚙️"},
-  {name:"KakaoTalk", icon:"💬", badge:"4"},
-  {name:"Instagram", icon:"📸", badge:"1"},
-  {name:"時計", icon:"🕒"},
-  {name:"メール", icon:"✉️"},
-  {name:"X", icon:"𝕏"},
-  {name:"電話", icon:"📞"},
-  {name:"Safari", icon:"🧭"},
-  {name:"ミュージック", icon:"🎵"}
+  {id:"photos",name:"写真",icon:"🌸",color:"#fff",dock:false},
+  {id:"camera",name:"カメラ",icon:"📷",color:"#333",dock:false},
+  {id:"calendar",name:"カレンダー",icon:"📅",color:"#fff",dock:false},
+  {id:"clock",name:"時計",icon:"🕘",color:"#fff",dock:false},
+  {id:"settings",name:"設定",icon:"⚙️",color:"#9da3aa",dock:false},
+  {id:"instagram",name:"Instagram",icon:"📸",color:"linear-gradient(135deg,#8358d8,#ee4266,#ffb04a)",dock:false},
+  {id:"maps",name:"マップ",icon:"🗺️",color:"#d4efcf",dock:false},
+  {id:"notes",name:"メモ",icon:"📝",color:"#ffe66d",dock:false},
+  {id:"appstore",name:"App Store",icon:"A",color:"#1687f8",dock:false},
+  {id:"music",name:"ミュージック",icon:"🎵",color:"#f24b65",dock:false},
+  {id:"phone",name:"電話",icon:"📞",color:"#39c95b",dock:true},
+  {id:"safari",name:"Safari",icon:"🧭",color:"#f7f7f7",dock:true},
+  {id:"messages",name:"メッセージ",icon:"💬",color:"#34c759",dock:true},
+  {id:"photos",name:"写真",icon:"🌸",color:"#fff",dock:true}
 ];
-
-let pin = "";
-let affection = 52;
-let activeWallpaperTarget = "lock";
-
-function showView(id) {
-  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+const $ = s => document.querySelector(s);
+const screens = ["lockScreen","passScreen","homeScreen","appScreen"];
+let entered = "";
+function showScreen(id) {
+  screens.forEach(s => $("#"+s).classList.toggle("active", s===id));
+  $("#lockWall").style.display = id==="lockScreen" || id==="passScreen" ? "" : "none";
+  $("#homeWall").style.display = id==="homeScreen" || id==="appScreen" ? "" : "none";
 }
-function showPasscode() {
-  pin = "";
-  updateDots();
-  showView("passcode");
+function makeIcon(a) {
+  return `<button class="app-icon" data-app="${a.id}"><span class="icon" style="background:${a.color}">${a.icon}</span><span>${a.name}</span></button>`;
 }
-function showLock() { showView("lock"); }
-
-function pressKey(number) {
-  if (pin.length >= 4) return;
-  pin += number;
-  updateDots();
-  if (pin.length === 4) {
-    setTimeout(() => {
-      if (pin === "0629") {
-        showView("home");
-        pin = "";
-        updateDots();
-      } else {
-        pin = "";
-        updateDots();
-        const title = document.querySelector(".pass-title");
-        title.textContent = "もう一度入力してください";
-        setTimeout(() => title.textContent = "パスコードを入力", 900);
-      }
-    }, 180);
-  }
-}
-function deleteKey() {
-  pin = pin.slice(0, -1);
-  updateDots();
-}
+$("#appGrid").innerHTML = apps.filter(a=>!a.dock).map(makeIcon).join("");
+$("#dock").innerHTML = apps.filter(a=>a.dock).map(a=>`<button class="app-icon" data-app="${a.id}" aria-label="${a.name}"><span class="icon" style="background:${a.color}">${a.icon}</span></button>`).join("");
+const keys = ["1","2","3","4","5","6","7","8","9","back","0","clear"];
+$("#keypad").innerHTML = keys.map(k => k==="back"
+  ? `<button class="text-button" data-key="back" style="font-size:22px">⌫</button>`
+  : k==="clear" ? `<button class="text-button" data-key="clear">消去</button>`
+  : `<button class="key ${k==="0"?"zero":""}" data-key="${k}">${k}<small>${({2:"ABC",3:"DEF",4:"GHI",5:"JKL",6:"MNO",7:"PQRS",8:"TUV",9:"WXYZ"})[k]||""}</small></button>`
+).join("");
 function updateDots() {
-  document.querySelectorAll(".dot").forEach((dot, i) => {
-    dot.classList.toggle("filled", i < pin.length);
-  });
+  $("#dots").innerHTML = [0,1,2,3].map(i=>`<span class="dot ${i<entered.length?"filled":""}"></span>`).join("");
 }
-
-function makeIcon(app) {
-  return `<button class="app-button" onclick="openApp('${app.name}')">
-    <span class="app-icon">${app.icon}</span>${app.name}
-    ${app.badge ? `<span class="badge">${app.badge}</span>` : ""}
-  </button>`;
-}
-document.getElementById("appGrid").innerHTML = apps.slice(0, 8).map(makeIcon).join("");
-document.getElementById("dock").innerHTML = apps.slice(8).map(makeIcon).join("");
-
-function closeApp() { showView("home"); }
-
-function openApp(name) {
-  const panel = document.getElementById("appScreen");
-  let content = "";
-
-  if (name === "Instagram") {
-    content = `
-      <div class="tab-row"><span>ホーム</span><span>リール</span><span>DM</span><span>検索</span></div>
-      <div class="post">
-        <div class="post-user">fm__629　🔒</div>
-        <p>今日はいい天気だったね。みんなもおつかれさま ☁️</p>
-        <div class="muted">♡ いいね！　コメントする</div>
-      </div>
-      <div class="post">
-        <div class="post-user">おすすめの投稿</div>
-        <p>ファンの投稿：この前の写真、同じ場所に見えるような……？</p>
-      </div>
-      <button class="soft-button" onclick="showIgProfile()">プロフィールを見る</button>
-      <div id="igProfileArea"></div>
-      <p class="hint">あなたのアカウント：fs2xo_（非公開）</p>`;
-  } else if (name === "KakaoTalk") {
-    content = `
-      <div class="card"><b>🔒 ふうま</b><div class="muted">オンライン</div></div>
-      <div class="chat-area" id="chatArea">
-        <div class="bubble them">今日もおつかれさま。ちゃんと休めてる？</div>
-        <div class="bubble">うん、少し落ち着いたところ！</div>
-        <div class="bubble them">よかった。無理しないでね。あとでまた連絡する。</div>
-      </div>
-      <div class="chat-input">
-        <input id="chatMessage" placeholder="メッセージを入力">
-        <button class="send-button" onclick="sendMessage()">送信</button>
-      </div>
-      <p class="muted">好感度：<span id="affectionValue">${affection}</span> 💗</p>`;
-  } else if (name === "X") {
-    content = `
-      <div class="tab-row"><span>ホーム</span><span>検索</span><span>通知 🔔</span><span>DM</span></div>
-      <div class="post"><b>ファンの投稿</b><p>最近、ふうまくんの近くにいる人が気になる……。</p><span class="muted">返信 12　リポスト 8　♡ 75</span></div>
-      <div class="post"><b>海外ファンからのDM</b><p>혹시 후마랑 사귀세요?</p><span class="muted">（もしかしてフウマと付き合っていますか？）</span></div>
-      <div class="post"><b>ファンの投稿</b><p>요즘 두 분 분위기가 이상해요</p><span class="muted">（最近2人の雰囲気が怪しいです）</span></div>
-      <div class="post"><b>海外ファンからのメッセージ</b><p>설마 진짜예요...?</p><span class="muted">（まさか本当なの…？）</span></div>`;
-  } else if (name === "電話") {
-    content = `<div class="card" style="text-align:center;padding:35px 10px">
-      <div style="font-size:54px">👤</div><h2>ふうま</h2><p>着信中…</p>
-      <button class="soft-button" onclick="alert('ふうま：もしもし？今、少しだけ話せる？')">📞 応答</button>
-      <button class="soft-button" onclick="alert('通話を終了しました')">終了</button>
-    </div>`;
-  } else if (name === "写真") {
-    content = `<div class="card"><div class="photo-tile">🌃</div><p>ふたりで見た夜景</p></div>
-      <div class="card"><div class="photo-tile">☕</div><p>秘密のカフェデート</p></div>
-      <p class="hint">ストーリーの選択によって、思い出が増えていきます。</p>`;
-  } else if (name === "カレンダー") {
-    content = `<div class="card"><b>11月2日　月曜日</b><p id="plans">ふうまとメッセージ 💬</p></div>
-      <div class="chat-input"><input id="planInput" placeholder="予定を入力">
-      <button class="send-button" onclick="addPlan()">追加</button></div>`;
-  } else if (name === "設定") {
-    content = `<div class="card">
-      <b>壁紙を変更</b>
-      <label class="settings-label" for="lockImage">ロック画面の写真</label>
-      <input class="file-input" id="lockImage" type="file" accept="image/*" onchange="setWallpaper(event,'lock')">
-      <label class="settings-label" for="homeImage">ホーム画面の写真</label>
-      <input class="file-input" id="homeImage" type="file" accept="image/*" onchange="setWallpaper(event,'home')">
-      <p class="hint">写真を選ぶと、このブラウザー内に保存されます。写真のサイズが大きい場合は読み込みに時間がかかることがあります。</p>
-      </div>`;
-  } else if (name === "Safari") {
-    content = `<div class="card"><b>Safari</b><p>ここはゲーム内のブラウザー画面です。</p></div>`;
-  } else {
-    content = `<div class="card">${name}アプリのデモ画面です。</div>`;
-  }
-
-  panel.innerHTML = `
-    <div class="app-header">
-      <button onclick="closeApp()">‹ ホーム</button>
-      <span>${name}</span>
-      <span style="width:60px"></span>
-    </div>
-    <div class="app-body">${content}</div>
-    <div class="home-indicator" style="background:#111"></div>`;
-  showView("appScreen");
-}
-
-function showIgProfile() {
-  document.getElementById("igProfileArea").innerHTML = `
-    <div class="card">
-      <div class="profile-avatar">🌙</div>
-      <h3>fs2xo_ 🔒</h3>
-      <p>非公開アカウント</p>
-      <p>フォロワー 1　　フォロー中 1</p>
-      <p>フォロー中：fm__629</p>
-    </div>`;
-}
-
-function sendMessage() {
-  const input = document.getElementById("chatMessage");
-  if (!input || !input.value.trim()) return;
-  const area = document.getElementById("chatArea");
-  const message = input.value.trim();
-  area.insertAdjacentHTML("beforeend",
-    `<div class="bubble">${escapeHtml(message)}</div>
-     <div class="bubble them">うん、聞いてるよ。ここではゆっくり話そう。</div>`);
-  input.value = "";
-  affection = Math.min(100, affection + 1);
-  document.getElementById("affectionValue").textContent = affection;
-  area.scrollTop = area.scrollHeight;
-}
-
-function addPlan() {
-  const input = document.getElementById("planInput");
-  if (!input || !input.value.trim()) return;
-  document.getElementById("plans").insertAdjacentHTML(
-    "beforeend", `<br>・${escapeHtml(input.value.trim())}`);
-  input.value = "";
-}
-
-function escapeHtml(text) {
-  return text.replace(/[&<>"']/g, ch => ({
-    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
-  }[ch]));
-}
-
-/* 壁紙の保存：IndexedDBを使い、リロード後も残るようにする */
-let wallpaperDB;
-function openWallpaperDB() {
-  return new Promise((resolve, reject) => {
-    if (!("indexedDB" in window)) return reject("IndexedDB unavailable");
-    const request = indexedDB.open("MyIPhoneGame", 1);
-    request.onupgradeneeded = () => {
-      request.result.createObjectStore("wallpapers");
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-async function saveWallpaper(key, blob) {
-  const db = await openWallpaperDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction("wallpapers", "readwrite");
-    tx.objectStore("wallpapers").put(blob, key);
-    tx.oncomplete = resolve;
-    tx.onerror = () => reject(tx.error);
-  });
-}
-async function loadWallpaper(key) {
-  try {
-    const db = await openWallpaperDB();
-    return await new Promise((resolve, reject) => {
-      const request = db.transaction("wallpapers").objectStore("wallpapers").get(key);
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  } catch (e) {
-    return null;
+function keyInput(k) {
+  if(k==="back") entered=entered.slice(0,-1);
+  else if(k==="clear") entered="";
+  else if(entered.length<4) entered+=k;
+  $("#error").textContent="";
+  updateDots();
+  if(entered.length===4) {
+    if(entered==="0629") {
+      setTimeout(()=>{entered=""; showScreen("homeScreen");},180);
+    } else {
+      $("#error").textContent="パスコードが違います";
+      setTimeout(()=>{entered="";updateDots();},700);
+    }
   }
 }
-async function setWallpaper(event, target) {
-  const file = event.target.files && event.target.files[0];
-  if (!file) return;
-  try {
-    await saveWallpaper(target, file);
-    await applyWallpaper(target, file);
-    alert(target === "lock" ? "ロック画面の壁紙を設定しました。" : "ホーム画面の壁紙を設定しました。");
-  } catch (e) {
-    alert("画像を保存できませんでした。別の画像をお試しください。");
+$("#keypad").addEventListener("click",e=>{const k=e.target.closest("[data-key]")?.dataset.key;if(k)keyInput(k);});
+$("#lockScreen").addEventListener("click",()=>{entered="";updateDots();showScreen("passScreen");});
+$("#cancelPass").onclick=()=>showScreen("lockScreen");
+$("#emergency").onclick=()=>alert("ゲーム内のデモです。緊急通報は行いません。");
+$("#appGrid").addEventListener("click",openApp);
+$("#dock").addEventListener("click",openApp);
+$("#backHome").onclick=()=>showScreen("homeScreen");
+$("#homebar").onclick=()=> {
+  if($("#appScreen").classList.contains("active")) showScreen("homeScreen");
+  else if($("#passScreen").classList.contains("active")) showScreen("lockScreen");
+};
+let startY=0;
+$("#phone").addEventListener("touchstart",e=>startY=e.touches[0].clientY,{passive:true});
+$("#phone").addEventListener("touchend",e=>{
+  if(startY-e.changedTouches[0].clientY>35 && $("#lockScreen").classList.contains("active")) {
+    entered="";updateDots();showScreen("passScreen");
   }
-}
-async function applyWallpaper(target, blob) {
-  const url = URL.createObjectURL(blob);
-  document.documentElement.style.setProperty(
-    target === "lock" ? "--wall-lock" : "--wall-home",
-    `url("${url}")`
-  );
-}
-async function restoreWallpapers() {
-  const lock = await loadWallpaper("lock");
-  const home = await loadWallpaper("home");
-  if (lock) applyWallpaper("lock", lock);
-  if (home) applyWallpaper("home", home);
-}
-restoreWallpapers();
+},{passive:true});
 
-/* 時計・日付 */
-function updateClock() {
-  const now = new Date();
-  const time = new Intl.DateTimeFormat("ja-JP", {
-    hour:"2-digit", minute:"2-digit", hour12:false
-  }).format(now);
-  ["statusTime","passStatusTime","homeStatusTime","lockTime"].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = time;
+function openApp(e) {
+  const id=e.target.closest("[data-app]")?.dataset.app;
+  if(!id)return;
+  renderApp(id); showScreen("appScreen");
+}
+function renderApp(id) {
+  const names={photos:"写真",camera:"カメラ",calendar:"カレンダー",clock:"時計",settings:"設定",instagram:"Instagram",maps:"マップ",notes:"メモ","appstore":"App Store",music:"ミュージック",phone:"電話",safari:"Safari",messages:"メッセージ"};
+  $("#appTitle").textContent=names[id]||"アプリ";
+  const body=$("#appBody");
+  const views={
+    settings:`<div class="card"><h3>壁紙</h3><p>ロック画面とホーム画面の画像を選べます。</p><button class="mock-button" onclick="document.querySelector('#lockPicker').click()">ロック画面を選ぶ</button><button class="mock-button" onclick="document.querySelector('#homePicker').click()">ホーム画面を選ぶ</button></div><div class="card">通知　　サウンド　　画面表示</div><p style="text-align:center;color:#777">このゲームのパスコードは 0629</p>`,
+    instagram:`<div class="instagram-body"><div class="ig-head">Instagram <span>＋　♡　✉</span></div><div class="story-row">${["あなた","mika","haru","sora","yuki"].map((n,i)=>`<div class="story"><div><i></i></div>${n}</div>`).join("")}</div><div class="post"><div class="post-head"><span class="avatar">🌼</span> daily.mood　　•••</div><div class="post-image">🌅</div><div class="post-actions"><button class="like">♡</button><button>▢</button><button>➤</button><span style="float:right">♧</span><div style="font-size:13px;padding-top:5px">「いいね！」 いい一日になりますように ✨</div></div></div><div class="post"><div class="post-head"><span class="avatar">🐈</span> neko_days　　•••</div><div class="post-image" style="background:linear-gradient(130deg,#f3d2ad,#aaa4c5)">🐈</div><div class="post-actions"><button class="like">♡</button><button>▢</button><button>➤</button></div></div><nav style="display:flex;justify-content:space-around;padding:10px">⌂　⌕　＋　♡　●</nav></div>`,
+    photos:`<div class="card"><h2>ライブラリ</h2><p>最近の項目　　選択</p><div class="photo-grid">${Array.from({length:12},(_,i)=>`<div class="photo-tile" style="background:linear-gradient(${i*35}deg,#d6b2a8,#77718c,#343342)"></div>`).join("")}</div></div>`,
+    camera:`<div style="height:70%;background:linear-gradient(140deg,#37343c,#8d8190,#17171b);border-radius:20px;display:grid;place-items:center;font-size:40px">カメラ プレビュー</div><div style="text-align:center;padding:20px"><button class="mock-button" style="border-radius:50%;width:65px;height:65px;background:white" onclick="alert('撮影しました（デモ）')">●</button></div>`,
+    calendar:`<div class="card"><h2>6月　2025</h2><p>月　火　水　木　金　土　日</p><p style="line-height:2.5">　　1　2　3　4　5　6　7<br>8　9　10　11　12　13　14<br>15　16　17　18　19　20　21<br>22　23　24　25　26　27　28<br>29　30</p></div><div class="card">今日の予定はありません</div>`,
+    clock:`<div class="card" style="text-align:center;padding:45px 10px"><div style="font-size:58px">🕘</div><h2 id="liveClock">9:41</h2>世界時計　アラーム　ストップウォッチ　タイマー</div>`,
+    maps:`<div style="height:70%;border-radius:18px;background:linear-gradient(30deg,#dce9d2,#f1e8ce,#d6e5ef);display:grid;place-items:center;color:#555;font-size:25px">🗺️<br><small>地図のデモ画面</small></div><input class="field" placeholder="場所を検索">`,
+    notes:`<textarea class="field" style="height:70%;resize:none" placeholder="メモを入力…"></textarea>`,
+    appstore:`<div class="card"><h2>見つけよう</h2><input class="field" placeholder="ゲーム、アプリを検索"><p>おすすめアプリ</p>📱　便利なアプリを探す</div>`,
+    music:`<div class="card" style="text-align:center;padding:50px 15px"><div style="font-size:70px">🎵</div><h2>ミュージック</h2><p>お気に入りの曲を再生</p><button class="mock-button" onclick="this.textContent=this.textContent==='▶ 再生'?'⏸ 一時停止':'▶ 再生'">▶ 再生</button></div>`,
+    phone:`<div class="card"><input class="field" placeholder="連絡先を検索"><h3>よく使う項目</h3><p>👤　デモ連絡先</p><div style="text-align:center;font-size:24px;line-height:2.5">1　　2　　3<br>4　　5　　6<br>7　　8　　9<br>*　　0　　#</div><button class="mock-button">📞 通話（デモ）</button></div>`,
+    safari:`<input class="field" placeholder="検索またはWebサイト名を入力"><div class="card" style="margin-top:18px;text-align:center"><h2>お気に入り</h2>よく見るサイトをここに表示します</div>`,
+    messages:`<div class="card"><h2>メッセージ</h2><input class="field" placeholder="検索"><p>👤　あおい　　こんにちは！</p><hr><p>👤　家族　　　またあとでね</p><hr><p>👤　ゆう　　　写真ありがとう</p></div>`
+  };
+  body.innerHTML=views[id]||`<div class="card">${names[id]} のデモ画面</div>`;
+  body.querySelectorAll(".like").forEach(b=>b.onclick=()=>b.textContent=b.textContent==="♡"?"♥":"♡");
+}
+function setWallpaper(input,selector) {
+  input.addEventListener("change",()=>{
+    const file=input.files[0]; if(!file)return;
+    const reader=new FileReader();
+    reader.onload=()=>document.querySelector(selector).style.backgroundImage=`url("${reader.result}")`;
+    reader.readAsDataURL(file);
   });
-  const date = new Intl.DateTimeFormat("ko-KR", {
-    month:"long", day:"numeric", weekday:"long"
-  }).format(now);
-  document.getElementById("lockDate").textContent = date;
 }
-updateClock();
-setInterval(updateClock, 10000);
+setWallpaper($("#lockPicker"),"#lockWall");
+setWallpaper($("#homePicker"),"#homeWall");
 
-/* ロック画面で上にスワイプしてパスコード画面へ */
-let touchStartY = 0;
-document.getElementById("lock").addEventListener("touchstart", e => {
-  touchStartY = e.touches[0].clientY;
-}, {passive:true});
-document.getElementById("lock").addEventListener("touchend", e => {
-  const endY = e.changedTouches[0].clientY;
-  if (touchStartY - endY > 45) showPasscode();
-}, {passive:true});
+function updateTime() {
+  const now=new Date();
+  $("#clockStatus").textContent=now.toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"});
+  $("#timeText").textContent=now.toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"});
+  $("#dateText").textContent=now.toLocaleDateString("ja-JP",{month:"long",day:"numeric",weekday:"short"});
+  $("#homeDate").textContent=now.toLocaleDateString("ja-JP",{month:"long",day:"numeric",weekday:"short"});
+}
+updateTime(); setInterval(updateTime,10000);
+updateDots();
 </script>
 </body>
 </html>
